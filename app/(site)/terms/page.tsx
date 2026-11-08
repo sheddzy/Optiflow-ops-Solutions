@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Legal from "@/components/Legal";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Terms and Conditions | OptiFlow Ops Solutions Ltd", description: "Review the website usage terms and general conditions for engaging with OptiFlow Ops Solutions Ltd.", alternates: { canonical: "/terms" } };
+export const metadata: Metadata = { title: "Terms and Conditions | OptiFlow Ops Solutions Ltd", description: "Review the website usage terms and general conditions for engaging with OptiFlow Ops Solutions Ltd.", openGraph: { url: "/terms" }, alternates: { canonical: "/terms" } };
 
 export default function Terms() {
   return (
