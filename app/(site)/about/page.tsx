@@ -5,6 +5,7 @@ import { CtaBand, PageHero } from "@/components/Blocks";
 export const metadata: Metadata = {
   title: "About OptiFlow | Business Operations and Technology Solutions",
   description: "Learn about OptiFlow Ops Solutions, our approach to operations management, process improvement, automation and business technology.",
+  openGraph: { url: "/about" },
   alternates: { canonical: "/about" },
 };
 
