@@ -7,6 +7,7 @@ import type { IllustrationKey } from "@/lib/services-data";
 export const metadata: Metadata = {
   title: "OptiFlow Portfolio | Business Systems, Dashboards and Digital Solutions",
   description: "Explore examples of operational systems, workflow automation, reporting dashboards, project management setups and digital solutions.",
+  openGraph: { url: "/portfolio" },
   alternates: { canonical: "/portfolio" },
 };
 
