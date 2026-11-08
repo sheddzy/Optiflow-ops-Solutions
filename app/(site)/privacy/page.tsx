@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Legal from "@/components/Legal";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Privacy Policy | OptiFlow Ops Solutions Ltd", description: "Read how OptiFlow handles information submitted through its website and contact channels.", alternates: { canonical: "/privacy" } };
+export const metadata: Metadata = { title: "Privacy Policy | OptiFlow Ops Solutions Ltd", description: "Read how OptiFlow handles information submitted through its website and contact channels.", openGraph: { url: "/privacy" }, alternates: { canonical: "/privacy" } };
 
 export default function Privacy() {
   return (
