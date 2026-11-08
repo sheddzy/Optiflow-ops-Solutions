@@ -7,6 +7,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact OptiFlow | Discuss Your Business Operations Needs",
   description: "Contact OptiFlow Ops Solutions to discuss business operations setup, automation, dashboards, project management, annual packages and digital solutions.",
+  openGraph: { url: "/contact" },
   alternates: { canonical: "/contact" },
 };
 
