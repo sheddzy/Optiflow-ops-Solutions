@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const d = p.id === "launch"
     ? "OptiFlow's Launch package at ₦200,000 per year: domain registration support, up to two Zoho business email accounts, signatures, basic maintenance and renewal monitoring."
     : "OptiFlow's Pro package at ₦500,000 per year: business email, domain and a professional responsive website with contact form, WhatsApp integration, basic SEO and maintenance.";
-  return { title: `${t} | OptiFlow`, description: d, alternates: { canonical: `/packages/${p.id}` }, openGraph: { title: t, description: d } };
+  return { title: `${t} | OptiFlow`, description: d, alternates: { canonical: `/packages/${p.id}` }, openGraph: { title: t, description: d, url: `/packages/${p.id}` } };
 }
 
 export default async function PackagePage({ params }: { params: Promise<{ id: string }> }) {
