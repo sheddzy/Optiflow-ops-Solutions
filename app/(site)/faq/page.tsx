@@ -4,6 +4,7 @@ import { CtaBand, FaqList, PageHero } from "@/components/Blocks";
 export const metadata: Metadata = {
   title: "Frequently Asked Questions | OptiFlow Ops Solutions",
   description: "Find answers about OptiFlow's services, annual packages, business email, websites, implementation and OpsPilot.",
+  openGraph: { url: "/faq" },
   alternates: { canonical: "/faq" },
 };
 
