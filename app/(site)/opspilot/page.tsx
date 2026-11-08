@@ -5,6 +5,7 @@ import { CtaBand, FaqList, PageHero } from "@/components/Blocks";
 export const metadata: Metadata = {
   title: "OpsPilot | Business Operations Management Product by OptiFlow",
   description: "Discover OpsPilot, an operations-focused product by OptiFlow designed to help businesses organise leads, tasks, sales, expenses and operational information.",
+  openGraph: { url: "/opspilot" },
   alternates: { canonical: "/opspilot" },
 };
 
