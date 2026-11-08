@@ -8,9 +8,14 @@ import { PACKAGES, naira } from "@/lib/packages";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "OptiFlow Ops Solutions | Business Operations & Technology Solutions" },
-  description: "OptiFlow helps businesses improve operations through process documentation, workflow automation, reporting dashboards, project management and digital solutions.",
+  title: { absolute: "Business Operations Consulting & Automation in Nigeria | OptiFlow" },
+  description: "OptiFlow helps Nigerian SMEs improve business operations through SOPs, workflow automation, reporting dashboards, project coordination and digital solutions.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "Business Operations Consulting & Automation in Nigeria | OptiFlow",
+    description: "Improve business processes, automate repetitive work and gain better operational visibility with OptiFlow Ops Solutions.",
+    url: "/",
+  },
 };
 
 const PROBLEMS = [
