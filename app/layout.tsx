@@ -6,9 +6,25 @@ export const viewport: Viewport = { themeColor: "#1b3a63", width: "device-width"
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "OptiFlow Ops Solutions | Better Systems. Better Business.", template: "%s" },
-  description: "OptiFlow Ops Solutions helps businesses improve operations through process optimisation, workflow automation, dashboards and technology solutions.",
-  openGraph: { type: "website", siteName: SITE.name, url: SITE.url, images: [{ url: "/brand/logo.png" }] },
+  title: { default: "Business Operations & Automation in Nigeria | OptiFlow", template: "%s" },
+  description: "OptiFlow helps Nigerian businesses improve operations with practical systems, workflow automation, dashboards, project coordination and digital solutions.",
+  applicationName: SITE.name,
+  openGraph: {
+    type: "website",
+    locale: "en_NG",
+    siteName: SITE.name,
+    title: "Business Operations & Automation in Nigeria | OptiFlow",
+    description: "Practical operations consulting, workflow automation, reporting dashboards and digital solutions for growing businesses.",
+    url: SITE.url,
+    images: [{ url: "/brand/logo.png", width: 1200, height: 630, alt: "OptiFlow Ops Solutions" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Business Operations & Automation in Nigeria | OptiFlow",
+    description: "Practical operations consulting, workflow automation, reporting dashboards and digital solutions for growing businesses.",
+    images: ["/brand/logo.png"],
+  },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   alternates: { canonical: "/" },
   icons: { icon: "/brand/mark.png" },
 };
