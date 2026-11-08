@@ -12,7 +12,7 @@ export const generateStaticParams = () => SERVICES.map((s) => ({ slug: s.slug })
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const s = getService((await params).slug);
   if (!s) return {};
-  return { title: `${s.seoTitle} | OptiFlow`, description: s.seoDescription, alternates: { canonical: `/services/${s.slug}` }, openGraph: { title: s.seoTitle, description: s.seoDescription } };
+  return { title: `${s.seoTitle} | OptiFlow`, description: s.seoDescription, alternates: { canonical: `/services/${s.slug}` }, openGraph: { title: s.seoTitle, description: s.seoDescription, url: `/services/${s.slug}` } };
 }
 
 export default async function ServiceDetail({ params }: { params: Promise<{ slug: string }> }) {
