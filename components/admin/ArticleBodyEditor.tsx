@@ -21,7 +21,7 @@ export function ArticleBodyEditor({ initialValue }: { initialValue: string }) {
         setMessage(result.error || "The image could not be uploaded.");
         return;
       }
-      const name = file.name.replace(/\\.[^.]+$/, "").replace(/[-_]+/g, " ").trim() || "Article image";
+      const name = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim() || "Article image";
       const field = textarea.current;
       const start = field?.selectionStart ?? value.length;
       const end = field?.selectionEnd ?? value.length;
