@@ -45,7 +45,7 @@ export default function SiteAssistant() {
       {open && (
         <section
           aria-label="OptiFlow website assistant"
-          className="mb-3 flex w-[min( calc(100vw - 2rem), 390px)] flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-2xl"
+          className="mb-3 flex w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-2xl"
         >
           <header className="flex items-center justify-between bg-navy px-5 py-4 text-white">
             <div>
