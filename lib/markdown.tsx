@@ -46,7 +46,7 @@ export function Markdown({ source }: { source: string }) {
       els.push(<pre key={key} className="my-4 overflow-x-auto rounded-md bg-deep p-4 text-sm text-white"><code>{buf.join("\n")}</code></pre>);
       continue;
     }
-    const standaloneImage = /^!\\[([^\\]]*)\\]\\(([^)\\s]+)\\)$/.exec(line.trim());
+    const standaloneImage = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(line.trim());
     if (standaloneImage) {
       const src = safeImg(standaloneImage[2]);
       if (src) {
