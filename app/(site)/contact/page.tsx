@@ -35,7 +35,6 @@ export default function Contact() {
               <h2 className="text-xl font-semibold">Contact details</h2>
               <dl className="mt-4 space-y-4">
                 <div><dt className="font-semibold">General business enquiries</dt><dd><a className={link} href={`mailto:${SITE.enquiryEmail}`}>{SITE.enquiryEmail}</a></dd></div>
-                <div><dt className="font-semibold">Operations enquiries</dt><dd><a className={link} href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
                 <div><dt className="font-semibold">WhatsApp</dt><dd>{SITE.phoneDisplay}<br /><a className={link} href={SITE.whatsapp} target="_blank" rel="noopener noreferrer">Open WhatsApp chat</a></dd></div>
                 <div><dt className="font-semibold">Social media</dt><dd><a className={link} href={SITE.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>, <a className={link} href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram</a> and <a className={link} href={SITE.facebook} target="_blank" rel="noopener noreferrer">Facebook</a></dd></div>
               </dl>
