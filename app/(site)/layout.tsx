@@ -12,8 +12,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {banner && (
         <div className="promotion-marquee overflow-hidden bg-navy py-2.5 text-sm text-white" role="region" aria-label="Current promotion">
           <div className="promotion-marquee-track">
-            <Link href={banner.href} className="promotion-marquee-item font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link>
-            <Link href={banner.href} aria-hidden="true" tabIndex={-1} className="promotion-marquee-item font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link>
+            <div className="promotion-marquee-group"><Link href={banner.href} className="promotion-marquee-item font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link></div>
+            <div className="promotion-marquee-group" aria-hidden="true"><Link href={banner.href} tabIndex={-1} className="promotion-marquee-item font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link></div>
           </div>
         </div>
       )}
