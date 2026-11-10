@@ -68,7 +68,7 @@ export default function ContactForm({ presetService }: { presetService?: string 
         <h2 className="text-2xl font-semibold">One last step: send the email</h2>
         <p className="mt-3 max-w-prose text-slate">Your enquiry is ready. Press the button to open your email app with everything filled in, then press Send there. Your enquiry is not sent until you do.</p>
         <a href={state.mailto} className="btn btn-primary mt-6">Open my email app</a>
-        <p className="mt-4 text-sm text-slate">If nothing opens, email us directly at <a className="font-semibold text-teal-text underline" href="mailto:shedrackebete@optiflowops.online">shedrackebete@optiflowops.online</a> or use the WhatsApp option.</p>
+        <p className="mt-4 text-sm text-slate">If nothing opens, email us directly at <a className="font-semibold text-teal-text underline" href="mailto:operations@optiflowops.online">operations@optiflowops.online</a> or use the WhatsApp option.</p>
       </div>
     );
   }
