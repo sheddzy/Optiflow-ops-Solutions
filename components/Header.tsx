@@ -27,7 +27,6 @@ export default function Header({ hasPosts = false }: { hasPosts?: boolean }) {
             ))}
             <Link href="/portfolio" className="block rounded px-3 py-3 font-medium hover:bg-mist">Portfolio</Link>
             <Link href="/" className="block rounded px-3 py-3 font-medium hover:bg-mist">Home</Link>
-            <Link href="/contact" className="btn btn-primary mt-2 w-full">Contact</Link>
           </nav>
         </details>
       </div>
