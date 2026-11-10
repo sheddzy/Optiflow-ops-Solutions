@@ -49,7 +49,7 @@ export function ArticleBodyEditor({ initialValue }: { initialValue: string }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-3">
-        <label className={`btn ${busy ? "pointer-events-none opacity-60" : "btn-secondary"} cursor-pointer`}>
+        <label className={`btn btn-primary ${busy ? "pointer-events-none opacity-60" : ""} cursor-pointer`}>
           {busy ? "Uploading…" : "Add image at cursor"}
           <input
             type="file"
