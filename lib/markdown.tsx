@@ -46,6 +46,22 @@ export function Markdown({ source }: { source: string }) {
       els.push(<pre key={key} className="my-4 overflow-x-auto rounded-md bg-deep p-4 text-sm text-white"><code>{buf.join("\n")}</code></pre>);
       continue;
     }
+    const standaloneImage = /^!\\[([^\\]]*)\\]\\(([^)\\s]+)\\)$/.exec(line.trim());
+    if (standaloneImage) {
+      const src = safeImg(standaloneImage[2]);
+      if (src) {
+        els.push(
+          <figure key={key} className="my-8">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={standaloneImage[1]} loading="lazy" className="mx-auto block h-auto max-h-[560px] w-full rounded-lg object-contain" />
+            {standaloneImage[1] && <figcaption className="mt-2 text-center text-sm text-slate">{standaloneImage[1]}</figcaption>}
+          </figure>
+        );
+      } else {
+        els.push(<p key={key} className="my-4 leading-relaxed">{line}</p>);
+      }
+      i++; continue;
+    }
     const h = /^(#{1,4})\s+(.*)$/.exec(line);
     if (h) {
       const lvl = Math.min(Math.max(h[1].length, 2), 4); // # and ## are section headings (h2); the page title is the only h1
