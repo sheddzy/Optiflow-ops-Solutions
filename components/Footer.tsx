@@ -32,7 +32,6 @@ export default function Footer({ pages = [], hasPosts = false }: { pages?: { slu
         <div>
           <h2 className="font-semibold">Contact</h2>
           <ul className="mt-4 space-y-2 text-white/75">
-            <li><a href={`mailto:${SITE.email}`} className="break-words hover:text-teal">{SITE.email}</a></li>
             <li><a href={`mailto:${SITE.enquiryEmail}`} className="break-words hover:text-teal">{SITE.enquiryEmail}</a></li>
             <li><a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-teal">{SITE.phoneDisplay}</a></li>
           </ul>
