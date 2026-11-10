@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin";
 import { isoToLagos } from "@/lib/admin-format";
 import { DeleteBox, Flash, PageTitle } from "@/components/admin/ui";
+import { ArticleBodyEditor } from "@/components/admin/ArticleBodyEditor";
 import { deletePost, savePost } from "../actions";
 
 export const metadata = { title: "Edit article" };
@@ -36,8 +37,8 @@ export default async function EditPost({ params, searchParams }: { params: Promi
         <div><label htmlFor="excerpt" className={lab}>Short summary (shown on the blog list and in search results)</label><textarea id="excerpt" name="excerpt" rows={3} defaultValue={r.excerpt} className="field" /></div>
         <div>
           <label htmlFor="body_md" className={lab}>Article</label>
-          <textarea id="body_md" name="body_md" rows={20} defaultValue={r.body_md} className="field font-mono text-sm" />
-          <p className="mt-1 text-xs text-slate">Formatting: ## Heading, ### Smaller heading, **bold**, *italic*, [link text](https://example.com), - list item, 1. numbered item, &gt; quote, ![description](image link). Upload images in Media and paste their link. HTML is not allowed.</p>
+          <ArticleBodyEditor initialValue={r.body_md ?? ""} />
+          <p className="mt-1 text-xs text-slate">Formatting: ## Heading, ### Smaller heading, **bold**, *italic*, [link text](https://example.com), - list item, 1. numbered item, &gt; quote, ![description](image link). You can also place your cursor anywhere and use Add image at cursor. HTML is not allowed.</p>
         </div>
         <div>
           <label htmlFor="cover" className={lab}>Cover image (JPG, PNG or WebP, up to 4 MB)</label>
