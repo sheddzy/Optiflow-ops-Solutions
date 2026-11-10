@@ -10,8 +10,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">Skip to content</a>
       {banner && (
-        <div className="bg-navy px-5 py-2.5 text-center text-sm text-white">
-          <Link href={banner.href} className="font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link>
+        <div className="promotion-marquee overflow-hidden bg-navy py-2.5 text-sm text-white" role="region" aria-label="Current promotion">
+          <div className="promotion-marquee-track">
+            <div className="promotion-marquee-group"><Link href={banner.href} className="promotion-marquee-item font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link></div>
+            <div className="promotion-marquee-group" aria-hidden="true"><Link href={banner.href} tabIndex={-1} className="promotion-marquee-item font-medium underline underline-offset-4 hover:text-teal">{banner.text}</Link></div>
+          </div>
         </div>
       )}
       <Header hasPosts={hasPosts} />

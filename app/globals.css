@@ -42,3 +42,23 @@ body { background: var(--color-paper); color: var(--color-ink); font-family: var
 .field { width: 100%; background: #fff; border: 1.5px solid var(--color-line); border-radius: .375rem; padding: .75rem .9rem; font: inherit; color: var(--color-ink); }
 .field:focus { border-color: var(--color-navy); outline: 3px solid rgb(34 181 196 / .35); outline-offset: 0; }
 .field[aria-invalid="true"] { border-color: #b42318; }
+
+/* Continuous promotion ticker; duplicated content makes the loop seamless. */
+.promotion-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  padding-left: 1.5rem;
+  animation: promotion-scroll 26s linear infinite;
+}
+ .promotion-marquee-group { flex: 0 0 auto; padding-right: 3rem; }
+.promotion-marquee-item { display: inline-block; white-space: nowrap; }
+.promotion-marquee:hover .promotion-marquee-track { animation-play-state: paused; }
+@keyframes promotion-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promotion-marquee { overflow-x: auto; }
+  .promotion-marquee-track { animation: none; width: max-content; }
+}
