@@ -21,6 +21,14 @@ const schema = z.object({
 });
 const refresh = () => revalidatePath("/", "layout");
 
+export async function uploadInlineImage(form: FormData): Promise<{ url?: string; error?: string }> {
+  const { supabase } = await requireAdmin();
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose an image to upload." };
+  const result = await uploadImage(supabase, file);
+  return "error" in result ? { error: result.error } : { url: result.url };
+}
+
 export async function savePost(form: FormData) {
   const { supabase } = await requireAdmin();
   const id = String(form.get("id") ?? "");
