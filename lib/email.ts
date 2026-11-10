@@ -6,7 +6,7 @@ async function send(subject: string, html: string, replyTo?: string): Promise<bo
   const key = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM;
   if (!key || !from) return false; // Email not configured yet
-  const to = process.env.ENQUIRY_NOTIFY_TO || SITE.enquiryEmail;
+  const to = SITE.enquiryEmail;
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
