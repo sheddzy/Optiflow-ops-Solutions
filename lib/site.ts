@@ -3,8 +3,8 @@ export const SITE = {
   short: "OptiFlow",
   tagline: "Transforming Business Operations Through Technology.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://optiflowops.online",
-  enquiryEmail: "operations@optiflowops.online", // public business enquiries and website form notifications
-  email: "operations@optiflowops.online",
+  enquiryEmail: "info@optiflowops.online", // sole public business contact and website enquiry mailbox
+  email: "info@optiflowops.online",
   phoneDisplay: "+2349060914286",
   whatsapp: "https://wa.me/2349060914286",
   instagram: "https://www.instagram.com/optiflowops/",
