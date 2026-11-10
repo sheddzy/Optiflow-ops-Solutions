@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Illustration from "./Illustration";
-import { SITE } from "@/lib/site";
 import type { Block, IllustrationKey, ServiceItem } from "@/lib/services-data";
 
 export function PageHero({ title, intro, art, alt, children }: { title: string; intro: React.ReactNode; art: IllustrationKey; alt: string; children?: React.ReactNode }) {
@@ -39,10 +38,7 @@ export function CtaBand({ title, text, primary = "Send an enquiry", href = "/con
           <h2 className="max-w-xl text-3xl font-bold">{title}</h2>
           {text && <p className="mt-3 max-w-xl text-white/80">{text}</p>}
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href={href} className="btn btn-teal">{primary}</Link>
-          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-ghost-light">Chat With Us on WhatsApp</a>
-        </div>
+        <Link href={href} className="btn btn-teal">{primary}</Link>
       </div>
     </section>
   );
