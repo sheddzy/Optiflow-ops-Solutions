@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SiteAssistant from "@/components/SiteAssistant";
 import { getSiteChrome } from "@/lib/cms";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header hasPosts={hasPosts} />
       <main id="main">{children}</main>
       <Footer pages={footerPages} hasPosts={hasPosts} />
+      <SiteAssistant />
     </>
   );
 }
