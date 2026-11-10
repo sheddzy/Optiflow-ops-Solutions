@@ -16,6 +16,7 @@ export default function Header({ hasPosts = false }: { hasPosts?: boolean }) {
           ))}
           <Link href="/contact" className="btn btn-primary !py-2.5">Contact</Link>
         </nav>
+        <Link href="/contact" className="btn btn-primary !px-3 !py-2 md:hidden">Contact</Link>
         <details className="group relative md:hidden">
           <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-md border border-line" aria-label="Menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
