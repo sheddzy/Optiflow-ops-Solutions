@@ -48,11 +48,11 @@ body { background: var(--color-paper); color: var(--color-ink); font-family: var
   display: flex;
   width: max-content;
   align-items: center;
-  gap: 3rem;
   padding-left: 1.5rem;
   animation: promotion-scroll 26s linear infinite;
 }
-.promotion-marquee-item { flex: 0 0 auto; white-space: nowrap; }
+ .promotion-marquee-group { flex: 0 0 auto; padding-right: 3rem; }
+.promotion-marquee-item { display: inline-block; white-space: nowrap; }
 .promotion-marquee:hover .promotion-marquee-track { animation-play-state: paused; }
 @keyframes promotion-scroll {
   from { transform: translateX(0); }
