@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { neonAuth } from "@/lib/auth/neon";
+import { sendRecruitmentSignInCode } from "@/lib/auth/neon-otp";
 
 export type SignInState = { error: string };
 
@@ -15,11 +15,8 @@ async function sendSignInCode(email: string): Promise<string | null> {
   }
 
   try {
-    const { error } = await neonAuth.emailOtp.sendVerificationOtp({
-      email,
-      type: "sign-in",
-    });
-    if (error) {
+    const sent = await sendRecruitmentSignInCode(email);
+    if (!sent) {
       return "We could not send a sign-in code. Check the email address or try again shortly.";
     }
     return null;
