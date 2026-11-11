@@ -85,10 +85,20 @@ create trigger candidate_shares_validate_client
   on public.candidate_shares
   for each row execute function public.validate_candidate_share_client();
 alter table public.candidate_shares enable row level security;
-create policy "agency members manage candidate shares" on public.candidate_shares
+create policy "agency admins manage candidate shares" on public.candidate_shares
   for all to authenticated
-  using (public.is_agency_member(agency_id))
-  with check (public.is_agency_member(agency_id));
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters read assigned candidate shares" on public.candidate_shares
+  for select to authenticated
+  using (
+    exists (
+      select 1 from public.applications a
+      where a.id = candidate_shares.application_id
+        and a.agency_id = candidate_shares.agency_id
+        and a.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  );
 create policy "client users read shared candidates" on public.candidate_shares
   for select to authenticated
   using (
@@ -461,8 +471,15 @@ create policy "recruiters manage own candidates" on public.candidates
     )
   )
   with check (
-    created_by = (select auth.user_id())
-    and public.is_agency_member(agency_id)
+    public.is_agency_member(agency_id)
+    and (
+      created_by = (select auth.user_id())
+      or exists (
+        select 1 from public.applications a
+        where a.agency_id = candidates.agency_id and a.candidate_id = candidates.id
+          and a.assigned_recruiter_user_id = (select auth.user_id())
+      )
+    )
   );
 
 drop policy "agency members manage applications" on public.applications;
