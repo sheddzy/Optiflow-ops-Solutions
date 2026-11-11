@@ -196,7 +196,7 @@ grant execute on function public.list_public_vacancies(text,text,text,text) to a
 grant execute on function public.apply_to_public_vacancy(uuid,text,text,text,text,text,boolean,text) to anonymous, authenticated;
 
 create or replace function public.set_role_public_slug()
-returns trigger language plpgsql set search_path=public,pg_temp as $
+returns trigger language plpgsql set search_path=public,pg_temp as $role_slug$
 begin
  if new.is_public then
    if new.public_slug is null or btrim(new.public_slug)='' then
@@ -208,7 +208,7 @@ begin
  end if;
  return new;
 end;
-$;
+$role_slug$;
 create trigger roles_public_slug_before_write before insert or update of is_public,job_title on public.roles
  for each row execute function public.set_role_public_slug();
 
