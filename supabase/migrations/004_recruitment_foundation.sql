@@ -1,7 +1,8 @@
 -- OptiFlow Recruitment Operations SaaS: multi-tenant foundation.
 -- Adds isolated agency workspaces, memberships, clients, projects, roles and client portal memberships.
--- Run AFTER 001_schema.sql, 002_make_admin.sql and 003_cms.sql.
--- Test on a development Supabase project before applying to production.
+-- Standalone Neon PostgreSQL foundation for the recruitment SaaS.
+-- Requires Neon Auth enabled on this Neon project (provides auth.user_id() and authenticated role).
+-- This migration is independent of the existing OptiFlow website/Supabase database.
 
 begin;
 
@@ -16,6 +17,16 @@ create table public.agencies (
   updated_at timestamptz not null default now(),
   unique (id, slug)
 );
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $
+begin
+  new.updated_at = now();
+  return new;
+end;
+$;
+
 create trigger agencies_updated before update on public.agencies
   for each row execute function public.set_updated_at();
 
@@ -23,10 +34,10 @@ create trigger agencies_updated before update on public.agencies
 create table public.agency_memberships (
   id uuid primary key default gen_random_uuid(),
   agency_id uuid not null references public.agencies(id) on delete cascade,
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id text not null ,
   role text not null default 'recruiter' check (role in ('owner','admin','recruiter')),
   status text not null default 'active' check (status in ('invited','active','suspended')),
-  invited_by uuid references auth.users(id) on delete set null,
+  invited_by text ,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (agency_id, user_id),
@@ -42,11 +53,11 @@ create or replace function public.is_agency_member(p_agency_id uuid)
 returns boolean
 language sql stable security definer
 set search_path = public, pg_temp
-as $$
+as $
   select exists (
     select 1 from public.agency_memberships m
     where m.agency_id = p_agency_id
-      and m.user_id = (select auth.uid())
+      and m.user_id = (select auth.user_id())
       and m.status = 'active'
   );
 $$;
@@ -59,7 +70,7 @@ as $$
   select exists (
     select 1 from public.agency_memberships m
     where m.agency_id = p_agency_id
-      and m.user_id = (select auth.uid())
+      and m.user_id = (select auth.user_id())
       and m.status = 'active'
       and m.role = any(p_roles)
   );
@@ -74,7 +85,7 @@ security definer
 set search_path = public, pg_temp
 as $$
 declare
-  v_user_id uuid := auth.uid();
+  v_user_id text := auth.user_id();
   v_agency_id uuid;
   v_name text := btrim(p_name);
   v_slug text := lower(btrim(p_slug));
@@ -119,7 +130,7 @@ create table public.clients (
   relationship_status text not null default 'prospect'
     check (relationship_status in ('prospect','active','inactive','former')),
   notes text,
-  created_by uuid references auth.users(id) on delete set null default auth.uid(),
+  created_by text  default auth.user_id(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (id, agency_id)
@@ -148,9 +159,9 @@ create table public.projects (
   budget numeric(14,2) check (budget is null or budget >= 0),
   agreed_fee numeric(14,2) check (agreed_fee is null or agreed_fee >= 0),
   currency text not null default 'NGN' check (currency ~ '^[A-Z]{3}$'),
-  project_owner uuid references auth.users(id) on delete set null,
+  project_owner text ,
   internal_notes text,
-  created_by uuid references auth.users(id) on delete set null default auth.uid(),
+  created_by text  default auth.user_id(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (id, agency_id),
@@ -186,11 +197,11 @@ create table public.roles (
   vacancies_count integer not null default 1 check (vacancies_count between 1 and 10000),
   hiring_manager_name text,
   hiring_manager_email text,
-  assigned_recruiter uuid references auth.users(id) on delete set null,
+  assigned_recruiter text ,
   application_deadline date,
   status text not null default 'draft'
     check (status in ('draft','open','on_hold','filled','cancelled','closed')),
-  created_by uuid references auth.users(id) on delete set null default auth.uid(),
+  created_by text  default auth.user_id(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (id, agency_id),
@@ -209,11 +220,11 @@ create table public.client_portal_memberships (
   id uuid primary key default gen_random_uuid(),
   agency_id uuid not null references public.agencies(id) on delete cascade,
   client_id uuid not null,
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id text not null ,
   role text not null default 'hiring_manager'
     check (role in ('client_admin','hiring_manager','reviewer')),
   status text not null default 'invited' check (status in ('invited','active','suspended')),
-  invited_by uuid references auth.users(id) on delete set null,
+  invited_by text ,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (agency_id, client_id, user_id),
@@ -232,7 +243,7 @@ as $$
     select 1 from public.client_portal_memberships m
     where m.agency_id = p_agency_id
       and m.client_id = p_client_id
-      and m.user_id = (select auth.uid())
+      and m.user_id = (select auth.user_id())
       and m.status = 'active'
   );
 $$;
@@ -253,7 +264,7 @@ create policy "agency members read workspace" on public.agencies
 create policy "members read permitted memberships" on public.agency_memberships
   for select to authenticated
   using (
-    user_id = (select auth.uid())
+    user_id = (select auth.user_id())
     or public.has_agency_role(agency_id, array['owner','admin']::text[])
   );
 
@@ -296,10 +307,21 @@ create policy "client users read own roles" on public.roles
 create policy "read permitted client portal memberships" on public.client_portal_memberships
   for select to authenticated
   using (
-    user_id = (select auth.uid())
+    user_id = (select auth.user_id())
     or public.has_agency_role(agency_id, array['owner','admin']::text[])
   );
 
--- No anon policies are created for any SaaS table. Public website CMS policies remain unchanged.
+-- Grant only the authenticated application role access to the SaaS schema objects.
+-- RLS policies above enforce tenant boundaries for every row.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on
+  public.agencies, public.agency_memberships, public.clients,
+  public.projects, public.roles, public.client_portal_memberships
+to authenticated;
+grant execute on function public.is_agency_member(uuid) to authenticated;
+grant execute on function public.has_agency_role(uuid, text[]) to authenticated;
+grant execute on function public.is_client_portal_member(uuid, uuid) to authenticated;
+-- Workspace creation is available only through the authenticated RPC.
+-- No anonymous policies are created for SaaS tables.
 
 commit;
