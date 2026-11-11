@@ -20,12 +20,12 @@ create table public.agencies (
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
-as $
+as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$;
+$$;
 
 create trigger agencies_updated before update on public.agencies
   for each row execute function public.set_updated_at();
