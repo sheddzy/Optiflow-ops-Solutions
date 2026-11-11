@@ -1,48 +1,53 @@
 # Neon setup for the recruitment SaaS
 
-This setup is intentionally separate from the public OptiFlow website's existing Supabase backend.
+This setup is intentionally separate from the public OptiFlow website's existing Supabase backend. Do not change the existing Supabase environment variables, login routes, or admin proxy.
 
 ## 1. Open the Neon project
 
 Open the Neon Console and select project `crimson-truth-34671824` in organization `org-noisy-lab-32122549`.
 
-## 2. Enable Neon Auth
+## 2. Enable Managed Neon Auth
 
-1. Open the project's **Auth** section.
-2. Enable the current managed Neon Auth / Better Auth integration for the development branch.
-3. Configure the allowed application origin for the recruitment app's development URL and later its production route.
-4. Enable email/password sign-in initially. Add social sign-in only when its OAuth credentials and callback URLs are configured.
-5. Copy the branch-specific Auth URL. Auth URLs are branch-specific; do not reuse a development URL for production.
+1. Select the intended Neon branch.
+2. Open the **Auth** section and enable Managed Neon Auth / Better Auth.
+3. Enable email/password sign-in.
+4. Confirm the branch's trusted application origins. Localhost is normally pre-approved; add the deployed recruitment application origin before production use.
+5. Keep development and production branch Auth URLs separate.
 
-Neon Auth creates its own managed schema. Do not edit tables in `neon_auth` directly.
+Neon Auth creates and manages its own `neon_auth` schema. Do not edit its tables directly.
 
-## 3. Copy the database connection string
+## 3. Pull the Neon environment variables
 
-1. In the Neon Console, select the intended branch, compute, database and role.
-2. Click **Connect**.
-3. Keep **Connection pooling** enabled for the application's runtime connection.
-4. Copy the generated PostgreSQL connection string.
-5. Put it in `DATABASE_URL` in local `.env.local` and the recruitment app's Netlify environment configuration.
+From the project root, run:
 
-Use a direct (non-pooled) connection only for migration tooling that requires it. Never commit either connection string or share its password in chat.
+```bash
+neon env pull --service postgres --service auth
+```
 
-## 4. Configure local environment
+This should populate `DATABASE_URL` and `NEON_AUTH_BASE_URL` in your local environment file. The pooled PostgreSQL connection string is appropriate for application runtime use. Use a direct connection only for migration tooling that requires it.
 
-Copy `.env.example` to `.env.local` and replace both placeholders with the actual values from Neon. Keep `.env.local` out of Git.
+Generate the cookie secret locally:
 
-## 5. Configure Netlify
+```bash
+openssl rand -base64 32
+```
 
-In the Netlify site that hosts the OptiFlow Next.js application, add the recruitment-only variables:
+Add the generated value as `NEON_AUTH_COOKIE_SECRET`. Do not commit `.env.local`, paste credentials into chat, or expose these values with a `NEXT_PUBLIC_` prefix.
+
+## 4. Configure Netlify
+
+In the Netlify site that hosts the OptiFlow Next.js application, add these recruitment-only environment variables:
 
 - `DATABASE_URL`
-- `NEXT_PUBLIC_NEON_AUTH_URL`
+- `NEON_AUTH_BASE_URL`
+- `NEON_AUTH_COOKIE_SECRET`
 
-Set them for the appropriate deploy contexts. Use the production Neon branch/Auth URL for production and a separate Neon development branch/Auth URL for deploy previews. Do not change or delete the existing Supabase variables used by the website.
+Set development/deploy-preview values separately from production values. Do not change or delete the existing Supabase variables used by the public website.
 
-Trigger a deploy only after the application code and database migration have been reviewed and tested.
+## 5. Migration safety
 
-## 6. Migration safety
+The recruitment migration is in `neon/migrations/001_recruitment_foundation.sql`. It is a standalone Neon PostgreSQL migration and must be run against the Neon database, never against the website's Supabase project.
 
-The recruitment migration is in `neon/migrations/001_recruitment_foundation.sql` only because that is the repository's existing migration folder. It is a standalone Neon PostgreSQL migration; it must be run against the Neon database, never against the website's Supabase project.
+Before applying it, confirm Managed Neon Auth is enabled on the target Neon branch and that its `auth.user_id()` function and `authenticated` database role are available. Apply it to a development branch first, then verify workspace creation and tenant isolation. Do not apply it to production yet.
 
-Before running it, confirm Neon Auth is enabled on that Neon branch and the JWT/RLS functions and authenticated database role are available. Run it on a development branch first, then verify workspace creation and tenant isolation. Do not apply it to production yet.
+The SQL migration's function delimiters must be valid PostgreSQL dollar-quoting. Review the migration and test it on a disposable/development branch before production use.
