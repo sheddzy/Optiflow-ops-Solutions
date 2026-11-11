@@ -20,7 +20,7 @@ function getModule(table: string) {
   return module;
 }
 
-function readFields(formData: FormData, table: string) {
+function readFields(formData: FormData, table: string, clearEmpty = false) {
   const module = getModule(table);
   const payload: Record<string, unknown> = {};
 
@@ -28,6 +28,7 @@ function readFields(formData: FormData, table: string) {
     const raw = String(formData.get(field.name) ?? "").trim();
     if (!raw) {
       if (field.required) throw new Error(`${field.label} is required.`);
+      if (clearEmpty) payload[field.name] = field.name === "skills" ? [] : null;
       continue;
     }
 
@@ -132,7 +133,7 @@ export async function updateRecordAction(formData: FormData) {
     `${module.table}?id=eq.${encodeURIComponent(id)}&agency_id=eq.${encodeURIComponent(membership.agency_id)}`,
     {
       method: "PATCH",
-      body: readFields(formData, table),
+      body: readFields(formData, table, true),
       prefer: "return=minimal",
     },
   );
