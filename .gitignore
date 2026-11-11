@@ -7,3 +7,6 @@ node_modules
 
 # TypeScript build cache
 *.tsbuildinfo
+
+# Next.js generated build output
+.next/
