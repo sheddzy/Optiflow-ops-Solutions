@@ -20,7 +20,7 @@ create table public.agencies (
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
-as $
+as $$
 begin
   new.updated_at = now();
   return new;
@@ -66,7 +66,7 @@ create or replace function public.has_agency_role(p_agency_id uuid, p_roles text
 returns boolean
 language sql stable security definer
 set search_path = public, pg_temp
-as $
+as $$
   select exists (
     select 1 from public.agency_memberships m
     where m.agency_id = p_agency_id
@@ -83,7 +83,7 @@ returns uuid
 language plpgsql
 security definer
 set search_path = public, pg_temp
-as $
+as $$
 declare
   v_user_id text := auth.user_id();
   v_agency_id uuid;
@@ -238,7 +238,7 @@ create or replace function public.is_client_portal_member(p_agency_id uuid, p_cl
 returns boolean
 language sql stable security definer
 set search_path = public, pg_temp
-as $
+as $$
   select exists (
     select 1 from public.client_portal_memberships m
     where m.agency_id = p_agency_id
@@ -310,7 +310,9 @@ create policy "read permitted client portal memberships" on public.client_portal
     user_id = (select auth.user_id())
     or public.has_agency_role(agency_id, array['owner','admin']::text[])
   );
-
+revoke all on function public.is_agency_member(uuid) from public;
+revoke all on function public.has_agency_role(uuid, text[]) from public;
+revoke all on function public.is_client_portal_member(uuid, uuid) from public;
 -- Grant only the authenticated application role access to the SaaS schema objects.
 -- RLS policies above enforce tenant boundaries for every row.
 grant usage on schema public to authenticated;
