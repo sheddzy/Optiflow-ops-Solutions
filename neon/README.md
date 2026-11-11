@@ -12,6 +12,14 @@ Run these files in the Neon SQL Editor, in order, against the recruitment databa
 
 Migration 003 has not been applied to production. Test it on a separate Neon development branch before considering production use. Do not rerun a migration that has already completed. Both migrations use explicit transactions; a successful run ends with `COMMIT`.
 
+## Recruitment email
+
+The dashboard email centre uses the existing Resend account. Configure `RESEND_API_KEY` and `RESEND_FROM` as server-only environment variables in the Wasmer app. `RESEND_FROM` must be an address/domain verified in Resend. The app records provider acceptance in `communication_logs`; this is not proof that the recipient's mailbox accepted or displayed the message. Delivery webhooks are not yet implemented.
+
+## Job-board publishing
+
+The dashboard can queue one vacancy for multiple selected boards and track each external publication URL/status. This release does not claim automatic posting to LinkedIn, Indeed or Jobberman. LinkedIn Job Posting API access is restricted to approved partners; Indeed's ATS integrations require partner agreements and review. Google for Jobs uses crawlable public job pages with `JobPosting` structured data, not a general job-posting API. See the provider documentation before enabling a production connector.
+
 ## Tenant isolation
 
 Every recruitment record carries an `agency_id`. Foreign keys ensure related records belong to the same agency. RLS policies restrict staff access to agencies where the signed-in Neon Auth user has an active membership.
