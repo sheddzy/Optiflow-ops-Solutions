@@ -10,7 +10,7 @@ type Row = Record<string, unknown>;
 const val = (v: unknown) => v == null ? "" : String(v);
 const boardName = (v: string) => ({ linkedin: "LinkedIn", indeed: "Indeed", jobberman: "Jobberman", other: "Other board" }[v] ?? v);
 
-export default async function JobBoardsPage({ searchParams }: { searchParams: Promise<{ queued?: string; saved?: string }> }) {
+export default async function JobBoardsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const [{ data: session }, query] = await Promise.all([neonAuth.getSession(), searchParams]);
   if (!session?.user) redirect("/auth/sign-in");
   const membership = await getCurrentAgencyMembership();
@@ -24,8 +24,8 @@ export default async function JobBoardsPage({ searchParams }: { searchParams: Pr
   return <div className="min-h-screen bg-[#f4f7fb] text-[#172b4d]">
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4eaf1] bg-white px-5 py-4 sm:px-8"><div><Link href="/app" className="text-sm font-bold text-[#1b3a63]">OptiFlow Recruitment</Link><h1 className="mt-1 text-xl font-bold">Job-board publishing</h1><p className="text-xs text-[#718096]">{agency?.name ?? "Agency workspace"}</p></div><div className="flex gap-3"><Link href="/app" className="text-sm text-[#0b7886]">Workspace</Link><form action={signOutAction}><button className="text-sm text-[#52657d]">Sign out</button></form></div></header>
     <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-      {query.queued?<p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Vacancy publication tasks queued. Open each board and complete the posting, then record its live URL below.</p>:null}
-      {query.saved?<p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Publication record updated.</p>:null}
+      {query.queued === "1"?<p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Vacancy publication tasks queued. Open each board and complete the posting, then record its live URL below.</p>:null}
+      {query.saved === "1"?<p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Publication record updated.</p>:null}
       <div className="rounded-xl border border-[#e5ebf2] bg-white p-5 sm:p-6"><h2 className="font-bold text-[#1b3a63]">Publish an open vacancy</h2><p className="mt-1 text-xs leading-5 text-[#718096]">Select one vacancy and queue it for multiple boards in one step. The current release tracks and prepares postings; direct posting APIs require approved partner access and board credentials.</p>
         <form action={queueVacancyForBoardsAction} className="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
           <label className="grid gap-1 text-xs font-semibold text-[#52657d]">Open vacancy<select name="role_id" required className="rounded-lg border border-[#dce4ed] p-3 text-sm"><option value="">Select vacancy</option>{roles.map((r)=><option key={val(r.id)} value={val(r.id)}>{val(r.job_title)}</option>)}</select></label>
