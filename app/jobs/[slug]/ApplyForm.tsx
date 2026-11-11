@@ -5,9 +5,9 @@ export default function ApplyForm({roleId}:{roleId:string}) {
   const [busy,setBusy]=useState(false); const [message,setMessage]=useState("");
   async function submit(event:React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setMessage("");
-    const form=new FormData(event.currentTarget);
+    const formElement=event.currentTarget; const form=new FormData(formElement);
     const payload={roleId,firstName:String(form.get("firstName")||""),lastName:String(form.get("lastName")||""),email:String(form.get("email")||""),phone:String(form.get("phone")||""),resumeUrl:String(form.get("resumeUrl")||""),consent:form.get("consent")==="on",website:String(form.get("website")||"")};
-    try { const response=await fetch("/api/public/applications",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); const result=await response.json(); if(!response.ok) throw new Error(result.error||"Application failed."); setMessage("Application submitted. The recruitment team has received your details."); event.currentTarget.reset(); }
+    try { const response=await fetch("/api/public/applications",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); const result=await response.json(); if(!response.ok) throw new Error(result.error||"Application failed."); setMessage("Application submitted. The recruitment team has received your details."); formElement.reset(); }
     catch(error) { setMessage(error instanceof Error?error.message:"Application could not be submitted."); }
     finally { setBusy(false); }
   }
