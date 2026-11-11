@@ -57,7 +57,7 @@ export default async function PrivateAgentDashboard({ params }: { params: Promis
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e2e9f0] pb-5">
           <div>
             <Link href="/app" className="text-sm font-bold text-[#1b3a63]">OptiFlow Recruitment</Link>
-            <nav className="mt-3 flex flex-wrap gap-3 text-xs"><Link href="/app/communications" className="text-[#0b7886]">Communications</Link><Link href="/app/job-boards" className="text-[#0b7886]">Job boards</Link></nav>
+            <nav className="mt-3 flex flex-wrap gap-3 text-xs"><Link href="/app/communications" className="text-[#0b7886]">Communications</Link><Link href="/app/job-boards" className="text-[#0b7886]">Job boards</Link><Link href="/app/interviews" className="text-[#0b7886]">Interviews</Link></nav>
             <p className="mt-1 text-xs text-[#8190a2]">{agency?.name ?? "Agency workspace"} / Private recruiter workspace</p>
           </div>
           <div className="flex items-center gap-3">
