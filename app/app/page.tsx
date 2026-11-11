@@ -38,14 +38,15 @@ export default async function RecruitmentDashboardPage() {
     }
   };
 
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const now = new Date().toISOString();
+  const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
   const [clients, projects, roles, candidates, applications, interviews, placements, activities] = await Promise.all([
     safeRows(`clients?select=id&${agencyFilter}&limit=1000`),
     safeRows(`projects?select=id&${agencyFilter}&limit=1000`),
     safeRows(`roles?select=id,status&${agencyFilter}&limit=1000`),
     safeRows(`candidates?select=id&${agencyFilter}&limit=1000`),
     safeRows(`applications?select=id,status&${agencyFilter}&limit=1000`),
-    safeRows(`interviews?select=id,scheduled_at&${agencyFilter}&scheduled_at=gte.${encodeURIComponent(since)}&limit=1000`),
+    safeRows(`interviews?select=id,scheduled_at&${agencyFilter}&scheduled_at=gte.${encodeURIComponent(now)}&scheduled_at=lte.${encodeURIComponent(nextWeek)}&limit=1000`),
     safeRows(`placements?select=id,status&${agencyFilter}&limit=1000`),
     safeRows(`recruitment_activities?select=id,summary,action,entity_type,created_at&${agencyFilter}&order=created_at.desc&limit=8`),
   ]);
@@ -64,7 +65,7 @@ export default async function RecruitmentDashboardPage() {
     { label: "Active clients", value: count(clients.rows), note: "Client organisations", href: "/app/clients" },
     { label: "Open vacancies", value: count(roles.rows.filter((row) => row.status === "open")), note: `${count(roles.rows)} total roles`, href: "/app/roles" },
     { label: "Candidates", value: count(candidates.rows), note: "Candidate profiles", href: "/app/candidates" },
-    { label: "Interviews · last 7 days", value: count(interviews.rows), note: "Scheduled interviews", href: "/app/interviews" },
+    { label: "Upcoming interviews", value: count(interviews.rows), note: "Scheduled in the next 7 days", href: "/app/interviews" },
   ];
 
   return (
@@ -102,6 +103,10 @@ export default async function RecruitmentDashboardPage() {
             </div>
           </header>
 
+          <nav aria-label="Recruitment modules" className="flex gap-2 overflow-x-auto border-b border-[#e4eaf1] bg-white px-5 py-3 lg:hidden">
+            <Link href="/app" className="shrink-0 rounded-lg bg-[#edf4fb] px-3 py-2 text-xs font-semibold text-[#1b3a63]">Overview</Link>
+            {moduleNavigation.map((item) => <Link key={item.key} href={`/app/${item.key}`} className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">{item.label}</Link>)}
+          </nav>
           <div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 sm:py-9">
             <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
