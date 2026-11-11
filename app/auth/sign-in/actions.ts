@@ -29,3 +29,29 @@ export async function requestSignInCodeAction(
 
   redirect(`/auth/verify-code?email=${encodeURIComponent(email)}`);
 }
+
+export async function signInWithPasswordAction(
+  _previousState: SignInState,
+  formData: FormData,
+): Promise<SignInState> {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !password) {
+    return { error: "Enter your email address and password." };
+  }
+
+  try {
+    const auth = neonAuth as unknown as {
+      signIn: {
+        email(input: { email: string; password: string }): Promise<{ error?: { message?: string } | null }>;
+      };
+    };
+    const result = await auth.signIn.email({ email, password });
+    if (result?.error) return { error: result.error.message || "Email or password is incorrect." };
+  } catch {
+    return { error: "Unable to sign in. Check your details and try again." };
+  }
+
+  redirect("/app");
+}
