@@ -21,7 +21,13 @@ export default function InterviewWorkspace({applications,interviews}:{applicatio
   } catch(error) {setNotice(error instanceof Error?error.message:"Scheduling failed.");}
   finally {setBusy(false);}
  }
- async function reschedule(id:string) {\n  const value=rescheduleAt[id]; if(!value){setNotice("Choose a new date and time.");return;}\n  setBusy(true);setNotice("");\n  try {const response=await fetch(`/api/interviews/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({scheduledAt:new Date(value).toISOString(),durationMinutes:Number(rescheduleDuration[id]||45)})});const data=await response.json();if(!response.ok)throw new Error(data.error);setNotice("Interview rescheduled and calendar event updated.");window.location.reload();}\n  catch(error){setNotice(error instanceof Error?error.message:"Rescheduling failed.");}finally{setBusy(false);}\n }\n async function cancel(id:string) {
+ async function reschedule(id:string) {
+  const value=rescheduleAt[id]; if(!value){setNotice("Choose a new date and time.");return;}
+  setBusy(true);setNotice("");
+  try {const response=await fetch(`/api/interviews/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({scheduledAt:new Date(value).toISOString(),durationMinutes:Number(rescheduleDuration[id]||45)})});const data=await response.json();if(!response.ok)throw new Error(data.error);setNotice("Interview rescheduled and calendar event updated.");window.location.reload();}
+  catch(error){setNotice(error instanceof Error?error.message:"Rescheduling failed.");}finally{setBusy(false);}
+ }
+ async function cancel(id:string) {
   if(!window.confirm("Cancel this interview and remove its calendar event?"))return;
   setBusy(true);setNotice("");
   try {const response=await fetch(`/api/interviews/${id}`,{method:"DELETE"});const data=await response.json();if(!response.ok)throw new Error(data.error);setNotice("Interview cancelled.");window.location.reload();}
