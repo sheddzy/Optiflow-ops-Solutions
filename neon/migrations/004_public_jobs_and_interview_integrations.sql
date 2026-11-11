@@ -180,8 +180,8 @@ begin
     where id=v_candidate_id and agency_id=v_role.agency_id;
   end if;
 
-  insert into public.applications(agency_id,candidate_id,role_id,status,source)
-  values(v_role.agency_id,v_candidate_id,v_role.id,'sourced',coalesce(nullif(p_source,''),'public_job_board'))
+  insert into public.applications(agency_id,candidate_id,role_id,status,source,assigned_recruiter,assigned_recruiter_user_id)
+  values(v_role.agency_id,v_candidate_id,v_role.id,'sourced',coalesce(nullif(p_source,''),'public_job_board'),v_role.assigned_recruiter,v_role.assigned_recruiter_user_id)
   on conflict(candidate_id,role_id) do update set
     source=excluded.source
   returning id into v_application_id;
