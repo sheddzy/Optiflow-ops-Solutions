@@ -60,7 +60,7 @@ export async function POST(request:NextRequest) {
         conferenceData:{createRequest:{requestId:crypto.randomUUID(),conferenceSolutionKey:{type:"hangoutsMeet"}}},
       })});
       eventId=event.id; meetingUrl=event.hangoutLink??event.conferenceData?.entryPoints?.find((p:{entryPointType:string;uri:string})=>p.entryPointType==="video")?.uri??"";
-      if(!meetingUrl) throw new Error("Google created the calendar event but has not returned the Meet link yet. Refresh the interview record shortly.");
+      if(!meetingUrl) { const refreshed=await providerFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(eventId)}?conferenceDataVersion=1`,token); meetingUrl=refreshed.hangoutLink??refreshed.conferenceData?.entryPoints?.find((p:{entryPointType:string;uri:string})=>p.entryPointType==="video")?.uri??""; }\n    if(!meetingUrl) throw new Error("Google created the calendar event but has not returned the Meet link yet. Refresh the interview record shortly.");
     } else if(input.meetingProvider==="microsoft_teams") {
       const event=await providerFetch("https://graph.microsoft.com/v1.0/me/events",token,{method:"POST",body:JSON.stringify({
         subject:input.meetingTitle,body:{contentType:"text",content:input.meetingDescription},start:{dateTime:start.toISOString().replace("Z",""),timeZone:"UTC"},end:{dateTime:end.toISOString().replace("Z",""),timeZone:"UTC"},
@@ -90,7 +90,7 @@ export async function POST(request:NextRequest) {
       interviewer_emails:input.interviewerEmails,candidate_email_snapshot:candidate.email,candidate_name_snapshot:`${candidate.first_name} ${candidate.last_name}`,
       meeting_title:input.meetingTitle,meeting_description:input.meetingDescription,
     },prefer:"return=representation"});
-    if(process.env.RESEND_API_KEY && process.env.RESEND_FROM) {
+    if(interview[0]?.id) {\n      await recruitmentData("interview_attendees",{method:"POST",body:attendees.map((attendee)=>({agency_id:membership.agency_id,interview_id:interview[0].id,email:attendee.email})),prefer:"return=minimal"});\n    }\n    if(process.env.RESEND_API_KEY && process.env.RESEND_FROM) {
       const recipients=[candidate.email,...input.interviewerEmails];
       await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({
         from:process.env.RESEND_FROM,to:recipients,subject:`Interview scheduled: ${input.meetingTitle}`,
