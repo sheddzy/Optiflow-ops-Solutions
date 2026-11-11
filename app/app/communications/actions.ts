@@ -4,22 +4,32 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getCurrentAgencyMembership, recruitmentData } from "@/lib/recruitment/data";
 
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
+const htmlEntities: Record<string, string> = {
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-}[char] ?? char));
+};
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => htmlEntities[char] ?? char);
 
 export async function sendRecruitmentEmailAction(formData: FormData) {
   const membership = await getCurrentAgencyMembership();
   if (!membership) redirect("/app/setup");
 
   const to = String(formData.get("to") ?? "").trim();
-  const subject = String(formData.get("subject") ?? "").trim();
-  const body = String(formData.get("body") ?? "").trim();
+  let subject = String(formData.get("subject") ?? "").trim();
+  let body = String(formData.get("body") ?? "").trim();
+  const templateId = String(formData.get("template_id") ?? "").trim();
   const audience = String(formData.get("audience") ?? "candidate");
   const candidateId = String(formData.get("candidate_id") ?? "").trim() || null;
   const clientId = String(formData.get("client_id") ?? "").trim() || null;
   const applicationId = String(formData.get("application_id") ?? "").trim() || null;
 
+  if (templateId) {
+    const templates = await recruitmentData<{ subject: string; body: string }[]>(
+      `communication_templates?select=subject,body&id=eq.${encodeURIComponent(templateId)}&agency_id=eq.${membership.agency_id}&is_active=eq.true&limit=1`,
+    );
+    if (!templates[0]) throw new Error("Selected email template is unavailable.");
+    subject = templates[0].subject;
+    body = templates[0].body;
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) throw new Error("Enter a valid recipient email.");
   if (!subject || subject.length > 150) throw new Error("Subject is required and must be under 150 characters.");
   if (!body || body.length > 20000) throw new Error("Email message is required and must be under 20,000 characters.");
