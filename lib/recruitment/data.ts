@@ -11,7 +11,9 @@ type DataApiOptions = {
 function dataApiUrl(path: string) {
   const base = process.env.NEON_DATA_API_URL;
   if (!base) throw new Error("NEON_DATA_API_URL is not configured.");
-  return `${base.replace(/\\/$/, "")}/${path.replace(/^\\//, "")}`;
+  const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+  return `${normalizedBase}/${normalizedPath}`;
 }
 
 export async function recruitmentData<T>(
