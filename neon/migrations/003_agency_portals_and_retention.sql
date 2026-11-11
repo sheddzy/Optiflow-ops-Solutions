@@ -59,6 +59,31 @@ create table public.candidate_shares (
 );
 create index candidate_shares_client_idx
   on public.candidate_shares(agency_id, client_id, status, shared_at desc);
+
+-- Prevent an agency from sharing an application with a client other than the vacancy's client.
+create or replace function public.validate_candidate_share_client()
+returns trigger
+language plpgsql
+set search_path = public, pg_temp
+as $
+begin
+  if not exists (
+    select 1
+    from public.applications a
+    join public.roles r on r.id = a.role_id and r.agency_id = a.agency_id
+    where a.id = new.application_id
+      and a.agency_id = new.agency_id
+      and r.client_id = new.client_id
+  ) then
+    raise exception 'candidate_share_client_mismatch' using errcode = '23514';
+  end if;
+  return new;
+end;
+$;
+create trigger candidate_shares_validate_client
+  before insert or update of agency_id, client_id, application_id
+  on public.candidate_shares
+  for each row execute function public.validate_candidate_share_client();
 alter table public.candidate_shares enable row level security;
 create policy "agency members manage candidate shares" on public.candidate_shares
   for all to authenticated
