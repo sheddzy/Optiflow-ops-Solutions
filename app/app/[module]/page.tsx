@@ -152,6 +152,10 @@ export default async function RecruitmentModulePage({
             <span className="hidden max-w-64 truncate text-xs font-medium text-[#718096] sm:inline">{session.user.email}</span>
           </header>
 
+          <nav aria-label="Recruitment modules" className="flex gap-2 overflow-x-auto border-b border-[#e4eaf1] bg-white px-5 py-3 lg:hidden">
+            <Link href="/app" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Overview</Link>
+            {moduleNavigation.map((item) => <Link key={item.key} href={`/app/${item.key}`} className={`shrink-0 rounded-lg px-3 py-2 text-xs font-medium ${item.key === moduleKey ? "bg-[#edf4fb] text-[#1b3a63]" : "text-[#65758b] hover:bg-[#f5f8fb]"}`}>{item.label}</Link>)}
+          </nav>
           <div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 sm:py-9">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
