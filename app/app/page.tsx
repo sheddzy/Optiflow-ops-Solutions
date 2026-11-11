@@ -51,7 +51,6 @@ export default async function RecruitmentDashboardPage() {
   ]);
 
   const dataWarning = [clients, projects, roles, candidates, applications, interviews, placements, activities].some((result) => result.error);
-  const openRoles = roles.rows.filter((row) => row.status === "open").length;
   const stages = [
     { label: "Sourced", value: "sourced" },
     { label: "Screening", value: "screening" },
