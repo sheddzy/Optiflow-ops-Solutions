@@ -378,7 +378,7 @@ returns text
 language plpgsql
 security definer
 set search_path = public, pg_temp
-as $
+as $$
 declare
   v_user_id text := auth.user_id();
   v_membership public.agency_memberships%rowtype;
