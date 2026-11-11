@@ -111,7 +111,7 @@ export default async function RecruitmentModulePage({
               : table === "recruiter_profiles"
                 ? `${String(record.display_name ?? "Recruiter")}${record.is_active ? "" : " (inactive)"}`
                 : `${String(record.status ?? "Application")} · ${String(record.id).slice(0, 8)}`;
-      return { label, value: String(record.id) };
+      return { label, value: String(table === "recruiter_profiles" ? record.user_id : record.id) };
     });
   }
   const fieldOptions = (field: ModuleField) => {
