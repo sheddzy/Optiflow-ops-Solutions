@@ -65,7 +65,7 @@ create or replace function public.validate_candidate_share_client()
 returns trigger
 language plpgsql
 set search_path = public, pg_temp
-as $
+as $validate_share$
 begin
   if not exists (
     select 1
@@ -79,7 +79,7 @@ begin
   end if;
   return new;
 end;
-$;
+$validate_share$;
 create trigger candidate_shares_validate_client
   before insert or update of agency_id, client_id, application_id
   on public.candidate_shares
