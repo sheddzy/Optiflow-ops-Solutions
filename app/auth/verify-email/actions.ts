@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { neonAuth } from "@/lib/auth/neon";
+import { verifyRecruitmentSignInCode } from "@/lib/auth/neon-otp";
 
 export type VerifyCodeState = { error: string };
 
@@ -20,8 +20,8 @@ export async function verifyEmailCodeAction(
   }
 
   try {
-    const { error } = await neonAuth.signIn.emailOtp({ email, otp });
-    if (error) {
+    const verified = await verifyRecruitmentSignInCode(email, otp);
+    if (!verified) {
       return { error: "That code is invalid or has expired. Request a new code and try again." };
     }
   } catch {
