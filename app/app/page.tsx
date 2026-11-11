@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Recruitment Dashboard | OptiFlow",
@@ -37,11 +38,8 @@ export default function RecruitmentDashboardPage() {
       <div className="flex min-h-screen">
         <aside className="hidden w-64 shrink-0 flex-col border-r border-[#e4eaf1] bg-white lg:flex">
           <div className="flex h-[76px] items-center gap-3 border-b border-[#edf1f5] px-6">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1b3a63] text-lg font-bold text-white">O</div>
-            <div>
-              <p className="text-sm font-bold tracking-tight text-[#1b3a63]">OptiFlow</p>
-              <p className="text-[11px] text-[#75849a]">Recruitment workspace</p>
-            </div>
+            <Image src="/brand/logo.png" alt="OptiFlow Ops Solutions" width={836} height={301} priority className="h-10 w-auto object-contain" />
+            <span className="sr-only">Recruitment workspace</span>
           </div>
           <div className="px-4 pt-6">
             <p className="px-3 text-[10px] font-bold uppercase tracking-[.16em] text-[#9aa7b7]">Workspace</p>
@@ -66,9 +64,12 @@ export default function RecruitmentDashboardPage() {
 
         <main id="overview" className="min-w-0 flex-1">
           <header className="flex min-h-[76px] flex-wrap items-center justify-between gap-3 border-b border-[#e4eaf1] bg-white px-5 py-4 sm:px-8">
-            <div>
-              <p className="text-xs font-medium text-[#8b99aa]">Workspace / Overview</p>
-              <h1 className="mt-1 text-lg font-bold tracking-tight text-[#1b3a63] sm:text-xl">Recruitment overview</h1>
+            <div className="flex items-center gap-4">
+              <Image src="/brand/logo.png" alt="OptiFlow Ops Solutions" width={836} height={301} priority className="h-8 w-auto object-contain lg:hidden" />
+              <div>
+                <p className="text-xs font-medium text-[#8b99aa]">Workspace / Overview</p>
+                <h1 className="mt-1 text-lg font-bold tracking-tight text-[#1b3a63] sm:text-xl">Recruitment overview</h1>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <span className="hidden rounded-full border border-[#e3eaf1] px-3 py-1.5 text-xs font-medium text-[#718096] sm:inline-flex">Agency workspace</span>
