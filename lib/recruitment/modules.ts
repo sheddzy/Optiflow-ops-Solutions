@@ -60,7 +60,7 @@ export const recruitmentModules: Record<string, RecruitmentModule> = {
     description: "Organise recruitment assignments, delivery plans, owners and deadlines.",
     entityType: "project",
     fields: [
-      { name: "client_id", label: "Client ID", required: true, help: "Paste the ID of an existing client record." },
+      { name: "client_id", label: "Client company", required: true, help: "Select the hiring company for this project." },
       { name: "project_name", label: "Project name", required: true },
       { name: "reference_code", label: "Reference code" },
       { name: "description", label: "Description", type: "textarea" },
@@ -91,8 +91,8 @@ export const recruitmentModules: Record<string, RecruitmentModule> = {
     description: "Create job openings and track hiring requirements and ownership.",
     entityType: "role",
     fields: [
-      { name: "client_id", label: "Client ID", required: true, help: "Paste the ID of an existing client record." },
-      { name: "project_id", label: "Project ID", help: "Optional. Paste the ID of an existing project." },
+      { name: "client_id", label: "Client company", required: true, help: "Select the hiring company for this vacancy." },
+      { name: "project_id", label: "Recruitment project", help: "Optional. Link this vacancy to an existing project." },
       { name: "job_title", label: "Job title", required: true },
       { name: "department", label: "Department" },
       { name: "description", label: "Job description", type: "textarea" },
@@ -161,8 +161,8 @@ export const recruitmentModules: Record<string, RecruitmentModule> = {
     description: "Track each candidate against a vacancy from sourcing through offer or rejection.",
     entityType: "application",
     fields: [
-      { name: "candidate_id", label: "Candidate ID", required: true },
-      { name: "role_id", label: "Role ID", required: true },
+      { name: "candidate_id", label: "Candidate", required: true, help: "Select an existing candidate profile." },
+      { name: "role_id", label: "Vacancy", required: true, help: "Select the vacancy this candidate applied for." },
       { name: "status", label: "Pipeline stage", type: "select", options: status(["sourced", "screening", "shortlisted", "interview", "assessment", "offer", "hired", "rejected", "withdrawn"]) },
       { name: "source", label: "Application source" },
       { name: "assigned_recruiter", label: "Assigned recruiter" },
@@ -187,7 +187,7 @@ export const recruitmentModules: Record<string, RecruitmentModule> = {
     description: "Schedule interviews, record feedback, ratings and outcomes.",
     entityType: "interview",
     fields: [
-      { name: "application_id", label: "Application ID", required: true },
+      { name: "application_id", label: "Candidate application", required: true, help: "Select the candidate's application for this vacancy." },
       { name: "interview_round", label: "Interview round", type: "number" },
       { name: "interview_type", label: "Interview type", type: "select", options: status(["phone", "video", "onsite", "technical", "panel", "other"]) },
       { name: "status", label: "Status", type: "select", options: status(["scheduled", "completed", "cancelled", "rescheduled", "no_show"]) },
@@ -217,7 +217,7 @@ export const recruitmentModules: Record<string, RecruitmentModule> = {
     entityType: "placement",
     fields: [
       { name: "application_id", label: "Application ID", required: true },
-      { name: "client_id", label: "Client ID", required: true },
+      { name: "client_id", label: "Client company", required: true },
       { name: "status", label: "Status", type: "select", options: status(["pending_start", "active", "completed", "cancelled", "replacement"]) },
       { name: "start_date", label: "Start date", type: "date" },
       { name: "end_date", label: "End date", type: "date" },
