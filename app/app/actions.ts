@@ -82,7 +82,7 @@ export async function createAgencyAction(formData: FormData) {
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/^-|-$/g, "") || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   if (name.length < 2 || slug.length < 2) {
     throw new Error("Enter a valid agency name.");
