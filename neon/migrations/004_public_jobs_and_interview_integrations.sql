@@ -145,6 +145,9 @@ begin
      or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
     raise exception 'invalid_application_details' using errcode = '22023';
   end if;
+  if p_source is not null and char_length(p_source) > 80 then
+    raise exception 'invalid_application_source' using errcode = '22023';
+  end if;
   if p_resume_url is not null and p_resume_url !~ '^https://' then
     raise exception 'invalid_resume_url' using errcode = '22023';
   end if;
@@ -153,6 +156,8 @@ begin
       and (application_deadline is null or application_deadline >= current_date);
   if not found then raise exception 'vacancy_not_available' using errcode = '22023'; end if;
 
+  -- Serialize applications for the same agency/email to prevent duplicate candidate creation under concurrency.
+  perform pg_advisory_xact_lock(hashtext(v_role.agency_id::text || ':' || v_email));
   select id into v_candidate_id from public.candidates
     where agency_id = v_role.agency_id and lower(email) = v_email
     limit 1;
