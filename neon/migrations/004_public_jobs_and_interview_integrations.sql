@@ -140,7 +140,7 @@ begin
   if p_consent is distinct from true then
     raise exception 'consent_required' using errcode = '22023';
   end if;
-  if p_first_name is null or char_length(btrim(p_first_name)) not between 1 and 100
+  if v_email is null or p_first_name is null or char_length(btrim(p_first_name)) not between 1 and 100
      or p_last_name is null or char_length(btrim(p_last_name)) not between 1 and 100
      or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
     raise exception 'invalid_application_details' using errcode = '22023';
@@ -194,5 +194,22 @@ revoke all on function public.list_public_vacancies(text,text,text,text) from pu
 revoke all on function public.apply_to_public_vacancy(uuid,text,text,text,text,text,boolean,text) from public;
 grant execute on function public.list_public_vacancies(text,text,text,text) to anon, authenticated;
 grant execute on function public.apply_to_public_vacancy(uuid,text,text,text,text,text,boolean,text) to anon, authenticated;
+
+create or replace function public.set_role_public_slug()
+returns trigger language plpgsql set search_path=public,pg_temp as $
+begin
+ if new.is_public then
+   if new.public_slug is null or btrim(new.public_slug)='' then
+     new.public_slug := trim(both '-' from regexp_replace(lower(coalesce(new.job_title,'job')),'[^a-z0-9]+','-','g')) || '-' || substr(new.id::text,1,8);
+   end if;
+   if new.published_at is null then new.published_at := now(); end if;
+ else
+   new.published_at := null;
+ end if;
+ return new;
+end;
+$;
+create trigger roles_public_slug_before_write before insert or update of is_public,job_title on public.roles
+ for each row execute function public.set_role_public_slug();
 
 commit;
