@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 type Row = Record<string, unknown>;
 const value = (v: unknown) => v == null ? "" : String(v);
 
-export default async function CommunicationsPage({ searchParams }: { searchParams: Promise<{ sent?: string; template?: string }> }) {
+export default async function CommunicationsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const [{ data: session }, query] = await Promise.all([neonAuth.getSession(), searchParams]);
   if (!session?.user) redirect("/auth/sign-in");
   const membership = await getCurrentAgencyMembership();
@@ -25,8 +25,8 @@ export default async function CommunicationsPage({ searchParams }: { searchParam
       <div className="flex gap-3"><Link href="/app" className="text-sm text-[#0b7886]">Workspace</Link><form action={signOutAction}><button className="text-sm text-[#52657d]">Sign out</button></form></div>
     </header>
     <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-      {query.sent ? <p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Email accepted by Resend. Delivery confirmation may take additional time.</p> : null}
-      {query.template ? <p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Template saved.</p> : null}
+      {query.sent === "1" ? <p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Email accepted by Resend. Delivery confirmation may take additional time.</p> : null}
+      {query.template === "1" ? <p className="mb-5 rounded-lg border border-[#cde5d6] bg-[#f1faf4] p-3 text-sm text-[#27643b]">Template saved.</p> : null}
       <div className="grid gap-6 xl:grid-cols-[1.2fr_.8fr]">
         <section className="rounded-xl border border-[#e5ebf2] bg-white p-5 sm:p-6">
           <h2 className="font-bold text-[#1b3a63]">Send an email</h2><p className="mt-1 text-xs text-[#718096]">Send candidate, client or internal messages from your verified Resend sender address.</p>
