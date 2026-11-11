@@ -22,11 +22,12 @@ export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:str
   const interview=rows[0]; if(!interview||interview.status==="cancelled") return NextResponse.json({error:"Interview not found or already cancelled."},{status:404});
   const start=new Date(parsed.data.scheduledAt),end=new Date(start.getTime()+parsed.data.durationMinutes*60000);
   if(start.getTime()<Date.now()+5*60000) return NextResponse.json({error:"Choose a future time."},{status:400});
+  if(!interview.provider_event_id) return NextResponse.json({error:"This interview was not created through a connected calendar and cannot be synchronised."},{status:409});
   const calendarProvider=interview.calendar_provider==="microsoft"?"microsoft":"google";
   const {token}=await getProviderAccessToken(membership.agency_id,session.user.id,calendarProvider);
   if(calendarProvider==="google"&&interview.provider_event_id) {
-   const busy=await providerFetch("https://www.googleapis.com/calendar/v3/freeBusy",token,{method:"POST",body:JSON.stringify({timeMin:start.toISOString(),timeMax:end.toISOString(),timeZone:interview.timezone,items:[{id:"primary"}]})});
-   if((busy.calendars?.primary?.busy??[]).some((b:{start:string;end:string})=>new Date(b.start)<end&&new Date(b.end)>start)) throw new Error("The connected calendar has a conflicting event at this time.");
+   const events=await providerFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(start.toISOString())}&timeMax=${encodeURIComponent(end.toISOString())}&singleEvents=true`,token);
+   if((events.items??[]).some((event:{id:string})=>event.id!==interview.provider_event_id)) throw new Error("The connected calendar has a conflicting event at this time.");
    await providerFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(interview.provider_event_id)}?sendUpdates=all`,token,{method:"PATCH",body:JSON.stringify({start:{dateTime:start.toISOString(),timeZone:interview.timezone},end:{dateTime:end.toISOString(),timeZone:interview.timezone}})});
   } else if(calendarProvider==="microsoft"&&interview.provider_event_id) {
    const view=await providerFetch(`https://graph.microsoft.com/v1.0/me/calendarView?startDateTime=${encodeURIComponent(start.toISOString())}&endDateTime=${encodeURIComponent(end.toISOString())}`,token);
@@ -47,9 +48,9 @@ export async function DELETE(_request:NextRequest,{params}:{params:Promise<{id:s
  try {
   const rows=await recruitmentData<Interview[]>(`interviews?select=id,meeting_provider,calendar_provider,provider_event_id,provider_meeting_id,scheduled_at,duration_minutes,meeting_title,meeting_description,timezone,interviewer_emails,candidate_email_snapshot,meeting_url&id=eq.${id}&agency_id=eq.${membership.agency_id}&limit=1`);
   const interview=rows[0]; if(!interview) return NextResponse.json({error:"Interview not found."},{status:404});
-  const provider=interview.calendar_provider==="microsoft"?"microsoft":"google";
-  const {token}=await getProviderAccessToken(membership.agency_id,session.user.id,provider);
   if(interview.provider_event_id) {
+   const provider=interview.calendar_provider==="microsoft"?"microsoft":"google";
+   const {token}=await getProviderAccessToken(membership.agency_id,session.user.id,provider);
    const url=provider==="google"?`https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(interview.provider_event_id)}?sendUpdates=all`:`https://graph.microsoft.com/v1.0/me/events/${encodeURIComponent(interview.provider_event_id)}`;
    await providerFetch(url,token,{method:"DELETE"});
   }
