@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { neonAuth } from "@/lib/auth/neon";
+import { signOutAction } from "./actions";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Recruitment Dashboard | OptiFlow",
@@ -32,7 +37,13 @@ const modules = [
   { id: "placements", title: "Placements", description: "Record successful hires, placement details and outcomes.", action: "Placement records", count: "0 placements", icon: "✓" },
 ];
 
-export default function RecruitmentDashboardPage() {
+export default async function RecruitmentDashboardPage() {
+  const { data: session } = await neonAuth.getSession();
+  if (!session?.user) redirect("/auth/sign-in");
+  const displayName = session.user.name || session.user.email;
+  const hour = Number(new Intl.DateTimeFormat("en-NG", { hour: "2-digit", hour12: false, timeZone: "Africa/Lagos" }).format(new Date()));
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const today = new Intl.DateTimeFormat("en-NG", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Lagos" }).format(new Date());
   return (
     <div className="min-h-screen bg-[#f4f7fb] text-[#172b4d]">
       <div className="flex min-h-screen">
@@ -72,16 +83,18 @@ export default function RecruitmentDashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="hidden rounded-full border border-[#e3eaf1] px-3 py-1.5 text-xs font-medium text-[#718096] sm:inline-flex">Agency workspace</span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e8f2f5] text-sm font-bold text-[#0b7886]" aria-label="Account">A</div>
+              <span className="hidden max-w-48 truncate text-xs font-medium text-[#718096] sm:inline">{displayName}</span>
+              <form action={signOutAction}>
+                <button type="submit" className="rounded-lg border border-[#e3eaf1] px-3 py-2 text-xs font-semibold text-[#52657d] transition hover:bg-[#f5f8fb]">Sign out</button>
+              </form>
             </div>
           </header>
 
           <div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 sm:py-9">
             <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <p className="text-sm font-medium text-[#0b7886]">Wednesday, 11 November 2026</p>
-                <h2 className="mt-1 text-2xl font-bold tracking-tight text-[#1b3a63] sm:text-[28px]">Good morning</h2>
+                <p className="text-sm font-medium text-[#0b7886]">{today}</p>
+                <h2 className="mt-1 text-2xl font-bold tracking-tight text-[#1b3a63] sm:text-[28px]">{greeting}, {displayName.split("@")[0]}</h2>
                 <p className="mt-2 max-w-xl text-sm leading-6 text-[#718096]">Here is the current picture of your recruitment operations. Your workspace is ready for its first records.</p>
               </div>
               <a href="#clients" className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#1b3a63] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#11284a]">＋ Add your first client</a>
