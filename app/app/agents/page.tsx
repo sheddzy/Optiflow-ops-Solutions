@@ -1,10 +1,25 @@
-"use client";
+import { redirect } from "next/navigation";
+import { neonAuth } from "@/lib/auth/neon";
+import { getCurrentAgencyMembership, recruitmentData } from "@/lib/recruitment/data";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+export const dynamic = "force-dynamic";
 
-export default function AgentWorkspaceRedirect() {
-  const router = useRouter();
-  useEffect(() => { router.replace("/app"); }, [router]);
-  return <main className="min-h-screen bg-[#f4f7fb] p-8 text-sm text-[#52657d]">Opening your recruitment workspace…</main>;
+export default async function AgentWorkspaceEntry() {
+  const { data: session } = await neonAuth.getSession();
+  if (!session?.user) redirect("/auth/sign-in");
+  const membership = await getCurrentAgencyMembership();
+  if (!membership) redirect("/app/setup");
+  const userId = String(session.user.id);
+  let profiles = await recruitmentData<{ slug: string }[]>(
+    `recruiter_profiles?select=slug&agency_id=eq.${encodeURIComponent(membership.agency_id)}&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+  );
+  if (!profiles.length) {
+    const displayName = session.user.name || session.user.email?.split("@")[0] || "Recruiter";
+    const slug = await recruitmentData<string>("rpc/ensure_my_recruiter_profile", {
+      method: "POST",
+      body: { p_display_name: displayName },
+    });
+    profiles = [{ slug }];
+  }
+  redirect(`/app/agents/${encodeURIComponent(profiles[0].slug)}`);
 }
