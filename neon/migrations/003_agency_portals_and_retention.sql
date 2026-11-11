@@ -74,8 +74,7 @@ create policy "client users read shared candidates" on public.candidate_shares
 grant select, insert, update, delete on public.candidate_shares to authenticated;
 
 -- Safe client-facing view: intentionally excludes private email, phone, CV URL and recruiter notes.
-create or replace view public.client_candidate_review
-with (security_invoker = true) as
+create or replace view public.client_candidate_review as
 select
   s.id as share_id,
   s.agency_id,
@@ -102,7 +101,9 @@ join public.candidates c
 join public.roles r
   on r.id = a.role_id and r.agency_id = a.agency_id
 where s.status = 'shared'
-  and (s.expires_at is null or s.expires_at > now());
+  and (s.expires_at is null or s.expires_at > now())
+  and public.is_client_portal_member(s.agency_id, s.client_id);
+grant select on public.client_candidate_review to authenticated;
 
 -- Client feedback is written through a constrained function, never by direct candidate/application update.
 create or replace function public.submit_client_candidate_feedback(
@@ -201,9 +202,9 @@ create table public.communication_logs (
   sent_by text default auth.user_id(),
   sent_at timestamptz,
   created_at timestamptz not null default now(),
-  foreign key (candidate_id, agency_id) references public.candidates(id, agency_id) on delete set null,
-  foreign key (client_id, agency_id) references public.clients(id, agency_id) on delete set null,
-  foreign key (application_id, agency_id) references public.applications(id, agency_id) on delete set null
+  foreign key (candidate_id, agency_id) references public.candidates(id, agency_id) on delete restrict,
+  foreign key (client_id, agency_id) references public.clients(id, agency_id) on delete restrict,
+  foreign key (application_id, agency_id) references public.applications(id, agency_id) on delete restrict
 );
 create index communication_logs_agency_created_idx
   on public.communication_logs(agency_id, created_at desc);
@@ -300,7 +301,7 @@ create table public.client_hiring_requests (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   foreign key (client_id, agency_id) references public.clients(id, agency_id) on delete cascade,
-  foreign key (converted_role_id, agency_id) references public.roles(id, agency_id) on delete set null
+  foreign key (converted_role_id, agency_id) references public.roles(id, agency_id) on delete restrict
 );
 create index client_hiring_requests_client_idx
   on public.client_hiring_requests(agency_id, client_id, created_at desc);
