@@ -138,6 +138,8 @@ export default async function RecruitmentModulePage({
           </div>
           <nav aria-label="Recruitment modules" className="space-y-1 px-4 py-5">
             <Link href="/app" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">▦ <span>Overview</span></Link>
+            <Link href="/app/communications" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">✉ <span>Communications</span></Link>
+            <Link href="/app/job-boards" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">▣ <span>Job boards</span></Link>
             {moduleNavigation.map((item) => (
               <Link key={item.key} href={`/app/${item.key}`} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${item.key === moduleKey ? "bg-[#edf4fb] text-[#1b3a63]" : "text-[#65758b] hover:bg-[#f5f8fb] hover:text-[#1b3a63]"}`}>
                 <span className="w-5 text-center">{item.icon}</span>{item.label}
@@ -160,7 +162,7 @@ export default async function RecruitmentModulePage({
           </header>
 
           <nav aria-label="Recruitment modules" className="flex gap-2 overflow-x-auto border-b border-[#e4eaf1] bg-white px-5 py-3 lg:hidden">
-            <Link href="/app" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Overview</Link>
+            <Link href="/app" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Overview</Link><Link href="/app/communications" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Email</Link><Link href="/app/job-boards" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Job boards</Link>
             {moduleNavigation.map((item) => <Link key={item.key} href={`/app/${item.key}`} className={`shrink-0 rounded-lg px-3 py-2 text-xs font-medium ${item.key === moduleKey ? "bg-[#edf4fb] text-[#1b3a63]" : "text-[#65758b] hover:bg-[#f5f8fb]"}`}>{item.label}</Link>)}
           </nav>
           <div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 sm:py-9">
