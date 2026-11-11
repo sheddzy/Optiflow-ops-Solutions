@@ -5,7 +5,7 @@ import { getCurrentAgencyMembership, recruitmentData } from "@/lib/recruitment/d
 import { getProviderAccessToken } from "@/lib/recruitment/providers";
 
 export const dynamic="force-dynamic";
-type Interview={id:string;meeting_provider:"google_meet"|"microsoft_teams"|"zoom";calendar_provider:"google"|"microsoft"|"zoom";provider_event_id:string|null;provider_meeting_id:string|null;scheduled_at:string;duration_minutes:number;meeting_title:string|null;meeting_description:string|null;timezone:string;interviewer_emails:string[];candidate_email_snapshot:string|null;meeting_url:string|null};
+type Interview={id:string;meeting_provider:"google_meet"|"microsoft_teams"|"zoom";calendar_provider:"google"|"microsoft"|"zoom";provider_event_id:string|null;provider_meeting_id:string|null;scheduled_at:string;duration_minutes:number;meeting_title:string|null;meeting_description:string|null;timezone:string;interviewer_emails:string[];candidate_email_snapshot:string|null;meeting_url:string|null;status:string};
 const schema=z.object({scheduledAt:z.string().datetime(),durationMinutes:z.number().int().min(15).max(240)});
 async function providerFetch(url:string,token:string,init:RequestInit={}) {
  const response=await fetch(url,{...init,headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json",...(init.headers??{})},cache:"no-store"});
