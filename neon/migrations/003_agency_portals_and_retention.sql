@@ -181,7 +181,7 @@ create table public.placement_checkins (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (placement_id, milestone_days),
-  foreign key (placement_id) references public.placements(id) on delete cascade
+  foreign key (placement_id, agency_id) references public.placements(id, agency_id) on delete cascade
 );
 create index placement_checkins_due_idx
   on public.placement_checkins(agency_id, due_date) where completed_at is null;
@@ -265,7 +265,8 @@ create table public.job_board_connections (
   last_error text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (agency_id, provider, display_name)
+  unique (agency_id, provider, display_name),
+  unique (id, agency_id)
 );
 create trigger job_board_connections_updated before update on public.job_board_connections
   for each row execute function public.set_updated_at();
@@ -285,7 +286,7 @@ create table public.job_board_publications (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   foreign key (role_id, agency_id) references public.roles(id, agency_id) on delete cascade,
-  foreign key (connection_id) references public.job_board_connections(id) on delete set null
+  foreign key (connection_id, agency_id) references public.job_board_connections(id, agency_id) on delete restrict
 );
 create index job_board_publications_role_idx
   on public.job_board_publications(agency_id, role_id, publication_status);
