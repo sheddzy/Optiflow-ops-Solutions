@@ -43,6 +43,6 @@ Trigger a deploy only after the application code and database migration have bee
 
 ## 6. Migration safety
 
-The recruitment migration is in `supabase/migrations/004_recruitment_foundation.sql` only because that is the repository's existing migration folder. It is a standalone Neon PostgreSQL migration; it must be run against the Neon database, never against the website's Supabase project.
+The recruitment migration is in `neon/migrations/001_recruitment_foundation.sql` only because that is the repository's existing migration folder. It is a standalone Neon PostgreSQL migration; it must be run against the Neon database, never against the website's Supabase project.
 
 Before running it, confirm Neon Auth is enabled on that Neon branch and the JWT/RLS functions and authenticated database role are available. Run it on a development branch first, then verify workspace creation and tenant isolation. Do not apply it to production yet.
