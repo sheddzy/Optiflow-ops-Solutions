@@ -2,13 +2,13 @@
 
 ## Product boundary
 
-A multi-tenant recruitment agency management product sold by OptiFlow Ops Solutions and accessed from the existing `optiflowops.online` domain. It extends the current Next.js 16 + TypeScript + Tailwind + Supabase application deployed on Netlify. It does not replace the public website or the existing single-administrator CMS.
+A multi-tenant recruitment agency management product sold by OptiFlow Ops Solutions and accessed from the existing `optiflowops.online` domain. It is a separate application area in the existing Next.js 16 + TypeScript + Tailwind repository, deployed on Netlify. Recruitment data and authentication use a separate Neon project with Neon Auth. The existing website continues using its current Supabase project and Supabase Auth without modification. It does not replace the public website or the existing single-administrator CMS.
 
 Initial application route: `/app`. Product marketing route: `/products/recruitment-operations`.
 
 ## Account types and permissions
 
-- OptiFlow platform administrator: retains the existing `profiles.role = 'admin'` access and manages the public website/CMS. This is not an agency role.
+- OptiFlow platform administrator: retains the existing the existing platform-admin profile access and manages the public website/CMS. This is not an agency role.
 - Agency owner: owns one agency workspace and manages its settings, team and recruitment records.
 - Agency admin: manages agency records and team access, except ownership/billing transfer.
 - Recruiter: works on assigned or permitted clients, projects, roles, candidates and applications.
@@ -19,9 +19,9 @@ Agency membership roles and client portal access must be stored separately from 
 ## Core relational model
 
 - `agencies`: one workspace per subscribing recruitment agency; owner, display name, unique workspace slug and lifecycle state.
-- `agency_memberships`: joins Supabase Auth users to agencies with `owner`, `admin`, or `recruiter` role. A user may belong to more than one agency.
+- `agency_memberships`: joins Neon Neon Neon Auth users to agencies with `owner`, `admin`, or `recruiter` role. A user may belong to more than one agency.
 - `clients`: hiring companies owned by an agency; company details, primary contact and relationship status.
-- `client_portal_memberships`: joins Auth users to a specific client and agency, with a client-side role and invitation/activation state.
+- `client_portal_memberships`: joins Neon Neon Auth users to a specific client and agency, with a client-side role and invitation/activation state.
 - `projects`: recruitment engagements belonging to one agency and one client; scope, description, dates, owner, priority, budget/fee and status.
 - `roles`: vacancies belonging to an agency, client and optionally a project; title, department, description, requirements, employment type, location, salary range, headcount, hiring manager, deadline and status.
 - `candidates`: agency-owned candidate profiles and private contact/CV data.
@@ -35,13 +35,13 @@ All agency-owned rows carry a non-null `agency_id`. Foreign keys should include 
 
 ## Data access and isolation
 
-1. Enable Row Level Security on every SaaS table.
+1. Enable PostgreSQL Row Level Security on every SaaS table. Neon Auth must be enabled, and authenticated queries must carry the Neon Auth JWT so `auth.user_id()` resolves correctly.
 2. Agency members can access rows only when an active membership exists for the row's `agency_id`.
-3. Agency owner/admin/recruiter permissions are enforced by database policies or narrowly scoped database functions, not only by UI hiding.
+3. Agency owner/admin/recruiter permissions are enforced by database policies or narrowly scoped database functions, not only by UI hiding. Use Neon Auth's JWT-aware Data API or a verified JWT-aware database connection for user-scoped access; never run tenant-facing requests through an unrestricted owner connection.
 4. Client portal members are checked against both `agency_id` and `client_id`.
 5. Client users see only explicitly shared candidate/application information; never internal notes or private CV/contact fields unless the agency explicitly shares them.
 6. Public/anonymous users cannot query agency, client, project, role, candidate, application, interview or placement tables.
-7. Do not expose the Supabase service-role key in browser code.
+7. Do not expose the Neon database owner credentials in browser code.
 8. Keep existing public website and CMS RLS policies unchanged.
 
 ## Initial release sequence
@@ -59,11 +59,19 @@ All agency-owned rows carry a non-null `agency_id`. Foreign keys should include 
 11. Subscription plans, Paystack billing, renewals and plan limits.
 12. Security, tenant-isolation and production tests.
 
+## Neon environment configuration
+
+- `DATABASE_URL`: Neon pooled PostgreSQL connection string for server-side migrations and trusted backend jobs; never expose it with a `NEXT_PUBLIC_` prefix.
+- `NEXT_PUBLIC_NEON_AUTH_URL`: Auth endpoint for the selected Neon branch; this is public configuration, not a password.
+- Use a separate Neon development branch and its corresponding Auth URL for preview/testing.
+- Do not commit `.env.local`, database passwords, Neon API keys or any secret values.
+- Existing `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and the website's `proxy.ts` remain untouched.
+
 ## Implementation safeguards
 
-- Add new numbered Supabase migrations; never edit migrations already applied in production.
-- Keep the existing `profiles` table and `is_admin()` function for OptiFlow's platform administrator.
-- Do not enable public self-signup or change Supabase Auth settings until the signup flow and anti-abuse controls are ready.
-- Do not run a migration against production until it has been reviewed and tested on a development Supabase project.
+- Add new numbered Neon SQL migrations; never edit migrations already applied in production.
+- Keep the existing website's `profiles` table, `is_admin()` function, Supabase Auth and CMS integration entirely unchanged. Do not import recruitment users into the website's Supabase project.
+- Do not enable public self-signup or change Neon Auth settings until the signup flow and anti-abuse controls are ready.
+- Do not run a migration against production until it has been reviewed and tested on a development Neon branch/project.
 - No fake customer data or illustrative counts in production dashboards.
 - Subscription and payment tables are deferred until the core product workflows are stable.
