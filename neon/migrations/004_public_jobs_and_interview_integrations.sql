@@ -192,8 +192,8 @@ $$;
 
 revoke all on function public.list_public_vacancies(text,text,text,text) from public;
 revoke all on function public.apply_to_public_vacancy(uuid,text,text,text,text,text,boolean,text) from public;
-grant execute on function public.list_public_vacancies(text,text,text,text) to anon, authenticated;
-grant execute on function public.apply_to_public_vacancy(uuid,text,text,text,text,text,boolean,text) to anon, authenticated;
+grant execute on function public.list_public_vacancies(text,text,text,text) to anonymous, authenticated;
+grant execute on function public.apply_to_public_vacancy(uuid,text,text,text,text,text,boolean,text) to anonymous, authenticated;
 
 create or replace function public.set_role_public_slug()
 returns trigger language plpgsql set search_path=public,pg_temp as $
