@@ -1,14 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { neonAuth } from "@/lib/auth/neon";
+
+const neonMiddleware = neonAuth.middleware({ loginUrl: "/auth/sign-in" });
 
 /**
- * Runs only for /admin and /login. It refreshes the Supabase session cookie and sends
- * signed-out visitors to the login page. This is a convenience layer: every admin page and
- * action also checks the admin role on the server, and the database enforces it with RLS.
+ * Recruitment workspace routes use Neon Auth.
+ * Existing public-site admin routes continue to use Supabase Auth.
  */
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/app")) {
+    return neonMiddleware(request);
+  }
+
   let response = NextResponse.next({ request });
-  if (process.env.ENABLE_ADMIN !== "true") return response; // admin switched off: nothing to protect or refresh
+  if (process.env.ENABLE_ADMIN !== "true") return response;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return response;
@@ -31,4 +37,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/admin/:path*", "/login"] };
+export const config = { matcher: ["/app/:path*", "/admin/:path*", "/login"] };
