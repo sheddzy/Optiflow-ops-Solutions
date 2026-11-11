@@ -41,7 +41,7 @@ export async function updatePublicationAction(formData: FormData) {
   const status = String(formData.get("status") ?? "");
   const url = String(formData.get("public_url") ?? "").trim();
   if (!id || !["published", "paused", "expired", "failed"].includes(status)) throw new Error("Invalid publication update.");
-  if (status === "published" && url && !/^https:\/\//i.test(url)) throw new Error("Publication URL must use HTTPS.");
+  if (url && !/^https:\/\//i.test(url)) throw new Error("Publication URL must use HTTPS.");
   await recruitmentData(
     `job_board_publications?id=eq.${encodeURIComponent(id)}&agency_id=eq.${membership.agency_id}`,
     { method: "PATCH", body: { publication_status: status, public_url: url || null, published_at: status === "published" ? new Date().toISOString() : null }, prefer: "return=minimal" },
