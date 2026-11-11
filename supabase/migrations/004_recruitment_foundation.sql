@@ -195,7 +195,7 @@ create table public.roles (
   updated_at timestamptz not null default now(),
   unique (id, agency_id),
   foreign key (client_id, agency_id) references public.clients(id, agency_id) on delete restrict,
-  foreign key (project_id, agency_id) references public.projects(id, agency_id) on delete set null
+  foreign key (project_id, agency_id) references public.projects(id, agency_id) on delete restrict
 );
 create index roles_agency_status_idx on public.roles(agency_id, status);
 create index roles_project_idx on public.roles(project_id, agency_id);
