@@ -22,7 +22,7 @@ function inputValue(field: ModuleField, value: unknown) {
   return text;
 }
 
-function FormField({ field, value }: { field: ModuleField; value?: unknown }) {
+function FormField({ field, value, options }: { field: ModuleField; value?: unknown; options?: { label: string; value: string }[] }) {
   const id = `field-${field.name}`;
   const common = {
     id,
@@ -40,7 +40,7 @@ function FormField({ field, value }: { field: ModuleField; value?: unknown }) {
       ) : field.type === "select" ? (
         <select {...common} defaultValue={inputValue(field, value)}>
           <option value="">Select {field.label.toLowerCase()}</option>
-          {(field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          {(options ?? field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
       ) : (
         <input {...common} type={field.type ?? "text"} step={field.type === "number" ? "any" : undefined} defaultValue={inputValue(field, value)} />
@@ -55,7 +55,7 @@ export default async function RecruitmentModulePage({
   searchParams,
 }: {
   params: Promise<{ module: string }>;
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const [{ module: moduleKey }, query, { data: session }] = await Promise.all([
     params,
@@ -81,7 +81,42 @@ export default async function RecruitmentModulePage({
     loadError = error instanceof Error ? error.message : "Unable to load records.";
   }
 
-  const search = (query.q ?? "").trim().toLowerCase();
+  const relatedTables = [...new Set(
+    module.fields
+      .filter((field) => ["client_id", "project_id", "candidate_id", "role_id", "application_id"].includes(field.name))
+      .map((field) => field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : "applications"),
+  )];
+  const relatedData = await Promise.all(relatedTables.map(async (table) => {
+    const select = table === "clients" ? "id,company_name" : table === "projects" ? "id,project_name" : table === "candidates" ? "id,first_name,last_name,email" : table === "roles" ? "id,job_title,status" : "id,status";
+    try {
+      const records = await recruitmentData<Record<string, unknown>[]>(
+        `${table}?select=${select}&agency_id=eq.${encodeURIComponent(membership.agency_id)}&order=created_at.desc&limit=200`,
+      );
+      return [table, records] as const;
+    } catch {
+      return [table, [] as Record<string, unknown>[]] as const;
+    }
+  }));
+  const relationOptions: Record<string, { label: string; value: string }[]> = {};
+  for (const [table, records] of relatedData) {
+    relationOptions[table] = records.map((record) => {
+      const label = table === "clients"
+        ? String(record.company_name ?? "Client")
+        : table === "projects"
+          ? String(record.project_name ?? "Project")
+          : table === "candidates"
+            ? `${String(record.first_name ?? "")} ${String(record.last_name ?? "")}${record.email ? ` · ${String(record.email)}` : ""}`
+            : table === "roles"
+              ? `${String(record.job_title ?? "Role")} · ${String(record.status ?? "")}`
+              : `${String(record.status ?? "Application")} · ${String(record.id).slice(0, 8)}`;
+      return { label, value: String(record.id) };
+    });
+  }
+  const fieldOptions = (field: ModuleField) => {
+    const table = field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : field.name === "application_id" ? "applications" : null;
+    return table ? relationOptions[table] ?? [] : field.options;
+  };
+  const search = (typeof query.q === "string" ? query.q : "").trim().toLowerCase();
   const visibleRows = search
     ? rows.filter((row) => Object.values(row).some((value) => fieldValue(value).toLowerCase().includes(search)))
     : rows;
@@ -133,7 +168,7 @@ export default async function RecruitmentModulePage({
                 <form action={createRecordAction} className="mt-5 border-t border-[#edf1f5] pt-5">
                   <input type="hidden" name="table" value={module.table} />
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {module.fields.map((field) => <FormField key={field.name} field={field} />)}
+                    {module.fields.map((field) => <FormField key={field.name} field={field} options={fieldOptions(field)} />)}
                   </div>
                   <button type="submit" className="mt-5 rounded-lg bg-[#1b3a63] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#11284a]">Save {module.singular.toLowerCase()}</button>
                 </form>
@@ -147,7 +182,7 @@ export default async function RecruitmentModulePage({
                   <p className="mt-1 text-xs text-[#8a98a9]">Showing up to 100 most recent records.</p>
                 </div>
                 <form method="get" className="flex gap-2">
-                  <input name="q" defaultValue={query.q ?? ""} placeholder={`Search ${module.title.toLowerCase()}...`} className="min-w-0 rounded-lg border border-[#dce4ed] px-3 py-2 text-sm outline-none focus:border-[#0b7886] sm:w-64" />
+                  <input name="q" defaultValue={typeof query.q === "string" ? query.q : ""} placeholder={`Search ${module.title.toLowerCase()}...`} className="min-w-0 rounded-lg border border-[#dce4ed] px-3 py-2 text-sm outline-none focus:border-[#0b7886] sm:w-64" />
                   <button className="rounded-lg border border-[#dce4ed] px-3 py-2 text-xs font-semibold text-[#52657d] hover:bg-[#f5f8fb]">Search</button>
                 </form>
               </div>
@@ -181,7 +216,7 @@ export default async function RecruitmentModulePage({
                                   <input type="hidden" name="table" value={module.table} />
                                   <input type="hidden" name="id" value={String(row.id)} />
                                   <div className="grid gap-4 sm:grid-cols-2">
-                                    {module.fields.map((field) => <FormField key={field.name} field={field} value={row[field.name]} />)}
+                                    {module.fields.map((field) => <FormField key={field.name} field={field} value={row[field.name]} options={fieldOptions(field)} />)}
                                   </div>
                                   <div className="mt-5 flex flex-wrap gap-2">
                                     <button type="submit" className="rounded-lg bg-[#1b3a63] px-4 py-2 text-xs font-semibold text-white">Save changes</button>
