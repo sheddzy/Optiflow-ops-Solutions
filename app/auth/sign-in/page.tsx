@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import SignInForm from "./SignInForm";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sign in | OptiFlow Recruitment",
@@ -8,6 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default function RecruitmentSignInPage() {
+  const setupEnabled = Boolean(
+    process.env.RECRUITMENT_BOOTSTRAP_EMAIL && process.env.RECRUITMENT_BOOTSTRAP_CODE,
+  );
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb] px-5 py-12">
       <section className="w-full max-w-md rounded-2xl border border-[#e5ebf2] bg-white p-7 shadow-[0_12px_40px_rgba(23,43,77,.07)] sm:p-9">
@@ -20,6 +27,11 @@ export default function RecruitmentSignInPage() {
           <p className="mt-2 text-sm leading-6 text-[#7b899a]">Sign in to manage your clients, vacancies and recruitment delivery.</p>
         </div>
         <SignInForm />
+        {setupEnabled ? (
+          <p className="mt-6 text-center text-sm text-[#7b899a]">
+            First administrator? <Link href="/auth/sign-up" className="font-semibold text-[#0b7886] hover:underline">Set up your account</Link>
+          </p>
+        ) : null}
         <p className="mt-7 text-center text-xs leading-5 text-[#98a4b3]">Access is provided by your workspace administrator.</p>
       </section>
     </main>
