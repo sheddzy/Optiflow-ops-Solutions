@@ -20,7 +20,13 @@ export async function recruitmentData<T>(
   path: string,
   options: DataApiOptions = {},
 ): Promise<T> {
-  const { data, error } = await neonAuth.token();
+  const authTokenApi = neonAuth as unknown as {
+    token: () => Promise<{
+      data?: { token?: string } | null;
+      error?: { message?: string } | null;
+    }>;
+  };
+  const { data, error } = await authTokenApi.token();
   const accessToken = data?.token;
 
   if (error || !accessToken) {
