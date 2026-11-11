@@ -4,7 +4,7 @@ import SignInForm from "./SignInForm";
 
 export const metadata: Metadata = {
   title: "Sign in | OptiFlow Recruitment",
-  description: "Sign in to your OptiFlow recruitment workspace with an email verification code.",
+  description: "Sign in to your OptiFlow recruitment workspace with an email code or password.",
 };
 
 export default function RecruitmentSignInPage() {
@@ -17,7 +17,7 @@ export default function RecruitmentSignInPage() {
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-[.16em] text-[#0b7886]">Recruitment workspace</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#1b3a63]">Welcome back</h1>
-          <p className="mt-2 text-sm leading-6 text-[#7b899a]">Enter your work email. We will send you a one-time code to access your recruitment workspace.</p>
+          <p className="mt-2 text-sm leading-6 text-[#7b899a]">Sign in with your work email and password, or request a one-time code.</p>
         </div>
         <SignInForm />
         <p className="mt-7 text-center text-xs leading-5 text-[#98a4b3]">Access is provided by your workspace administrator.</p>
