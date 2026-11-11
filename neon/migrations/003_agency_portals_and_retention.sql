@@ -167,6 +167,7 @@ revoke all on function public.submit_client_candidate_feedback(uuid,text,text) f
 grant execute on function public.submit_client_candidate_feedback(uuid,text,text) to authenticated;
 
 -- Candidate employment and retention milestones after placement.
+alter table public.placements add constraint placements_id_agency_unique unique (id, agency_id);
 create table public.placement_checkins (
   id uuid primary key default gen_random_uuid(),
   agency_id uuid not null references public.agencies(id) on delete cascade,
