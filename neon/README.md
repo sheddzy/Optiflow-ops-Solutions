@@ -8,11 +8,19 @@ Run these files in the Neon SQL Editor, in order, against the recruitment databa
 
 1. `migrations/001_recruitment_foundation.sql` — agencies, memberships, clients, projects, roles and client portal memberships.
 2. `migrations/002_recruitment_pipeline.sql` — candidates, applications, interviews, placements and recruitment activity.
-3. `migrations/003_agency_portals_and_retention.sql` — recruiter profiles and assignment identifiers, private agent workspaces and role-based row policies, explicit client candidate sharing, safe client review projection and feedback, hiring requests, communications, job-board metadata, and placement retention check-ins.
+3. `migrations/003_agency_portals_and_retention.sql` — recruiter profiles and assignment identifiers, private agent workspaces and role-based row policies, explicit client candidate sharing, safe client review projection and feedback, hiring requests, communications, job-board metadata, and placement retention check-ins.\n4. `migrations/004_public_jobs_and_interview_integrations.sql` — public job board and application RPCs, published vacancy slugs, encrypted provider-connection records and interview meeting metadata.
 
 Migration 003 has not been applied to production. Test it on a separate Neon development branch before considering production use. Do not rerun a migration that has already completed. Both migrations use explicit transactions; a successful run ends with `COMMIT`.
 
-## Tenant isolation
+## Recruitment email
+
+The dashboard email centre uses the existing Resend account. Configure `RESEND_API_KEY` and `RESEND_FROM` as server-only environment variables in the Wasmer app. `RESEND_FROM` must be an address/domain verified in Resend. The app records provider acceptance in `communication_logs`; this is not proof that the recipient's mailbox accepted or displayed the message. Delivery webhooks are not yet implemented.
+
+## Job-board publishing
+
+The dashboard can queue one vacancy for multiple selected boards and track each external publication URL/status. This release does not claim automatic posting to LinkedIn, Indeed or Jobberman. LinkedIn Job Posting API access is restricted to approved partners; Indeed's ATS integrations require partner agreements and review. Google for Jobs uses crawlable public job pages with `JobPosting` structured data, not a general job-posting API. See the provider documentation before enabling a production connector.
+
+## Calendar and video integrations\n\nThe interview workspace supports per-user Google Calendar/Meet, Microsoft Outlook/Teams and Zoom OAuth connections. Add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, and a base64-encoded 32-byte `TOKEN_ENCRYPTION_KEY` as server-only Wasmer variables. Register callback URLs under `/api/integrations/{google|microsoft|zoom}/callback` after the app deployment URL is confirmed. Tokens are encrypted at rest. Interview creation checks the connected Google or Microsoft calendar and creates the selected meeting plus calendar event.\n\n## Public job board\n\nThe public board is served at `/jobs`. Agency users publish open vacancies from the dashboard. Applications enter the agency candidate and application records through a narrow public RPC. The current application form accepts an HTTPS CV link; direct file upload and automated interview reminders remain follow-up work.\n\n## Tenant isolation
 
 Every recruitment record carries an `agency_id`. Foreign keys ensure related records belong to the same agency. RLS policies restrict staff access to agencies where the signed-in Neon Auth user has an active membership.
 

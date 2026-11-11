@@ -79,6 +79,8 @@ export default async function RecruitmentDashboardPage() {
           <nav aria-label="Recruitment modules" className="space-y-1 px-4 py-5">
             <Link href="/app" className="flex items-center gap-3 rounded-lg bg-[#edf4fb] px-3 py-2.5 text-sm font-semibold text-[#1b3a63]">▦ <span>Overview</span></Link>
             <Link href="/app/agents" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">♙ <span>My agent dashboard</span></Link>
+            <Link href="/app/communications" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">✉ <span>Communications</span></Link>
+            <Link href="/app/job-boards" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">▣ <span>Job boards</span></Link>\n            <Link href="/app/interviews" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] hover:bg-[#f5f8fb]">◷ <span>Interviews</span></Link>
             {moduleNavigation.map((item) => (
               <Link key={item.key} href={`/app/${item.key}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#65758b] transition hover:bg-[#f5f8fb] hover:text-[#1b3a63]">
                 <span className="w-5 text-center">{item.icon}</span>{item.label}
@@ -107,6 +109,8 @@ export default async function RecruitmentDashboardPage() {
           <nav aria-label="Recruitment modules" className="flex gap-2 overflow-x-auto border-b border-[#e4eaf1] bg-white px-5 py-3 lg:hidden">
             <Link href="/app" className="shrink-0 rounded-lg bg-[#edf4fb] px-3 py-2 text-xs font-semibold text-[#1b3a63]">Overview</Link>
             <Link href="/app/agents" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">My dashboard</Link>
+            <Link href="/app/communications" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Email</Link>
+            <Link href="/app/job-boards" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Job boards</Link>\n            <Link href="/app/interviews" className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">Interviews</Link>
             {moduleNavigation.map((item) => <Link key={item.key} href={`/app/${item.key}`} className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-[#65758b] hover:bg-[#f5f8fb]">{item.label}</Link>)}
           </nav>
           <div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 sm:py-9">
@@ -202,6 +206,11 @@ export default async function RecruitmentDashboardPage() {
                   </Link>
                 ))}
               </div>
+            </section>
+
+            <section className="mt-7 grid gap-4 md:grid-cols-3">
+              <Link href="/app/communications" className="rounded-xl border border-[#e5ebf2] bg-white p-5 shadow-[0_2px_8px_rgba(23,43,77,.03)] hover:border-[#cbd8e5]"><h4 className="font-bold text-[#1b3a63]">Communications centre</h4><p className="mt-2 text-xs text-[#718096]">Send candidate and client emails, manage reusable templates and review sent history.</p><p className="mt-3 text-xs font-semibold text-[#0b7886]">Open email centre →</p></Link>
+              <Link href="/app/interviews" className="rounded-xl border border-[#e5ebf2] bg-white p-5 shadow-[0_2px_8px_rgba(23,43,77,.03)] hover:border-[#cbd8e5]"><h4 className="font-bold text-[#1b3a63]">Interview scheduling</h4><p className="mt-2 text-xs text-[#718096]">Connect calendars, check availability and schedule Meet, Teams or Zoom interviews.</p><p className="mt-3 text-xs font-semibold text-[#0b7886]">Open interview calendar →</p></Link>\n              <Link href="/app/job-boards" className="rounded-xl border border-[#e5ebf2] bg-white p-5 shadow-[0_2px_8px_rgba(23,43,77,.03)] hover:border-[#cbd8e5]"><h4 className="font-bold text-[#1b3a63]">Job-board publishing</h4><p className="mt-2 text-xs text-[#718096]">Queue vacancies for multiple channels and track live posting links.</p><p className="mt-3 text-xs font-semibold text-[#0b7886]">Open publishing workspace →</p></Link>
             </section>
 
             <footer className="mt-10 border-t border-[#e3eaf1] py-5 text-xs text-[#9aa7b7]">
