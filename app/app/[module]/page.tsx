@@ -83,11 +83,11 @@ export default async function RecruitmentModulePage({
 
   const relatedTables = [...new Set(
     module.fields
-      .filter((field) => ["client_id", "project_id", "candidate_id", "role_id", "application_id"].includes(field.name))
-      .map((field) => field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : "applications"),
+      .filter((field) => ["client_id", "project_id", "candidate_id", "role_id", "application_id", "assigned_recruiter_user_id"].includes(field.name))
+      .map((field) => field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : field.name === "application_id" ? "applications" : "recruiter_profiles"),
   )];
   const relatedData = await Promise.all(relatedTables.map(async (table) => {
-    const select = table === "clients" ? "id,company_name" : table === "projects" ? "id,project_name" : table === "candidates" ? "id,first_name,last_name,email" : table === "roles" ? "id,job_title,status" : "id,status";
+    const select = table === "clients" ? "id,company_name" : table === "projects" ? "id,project_name" : table === "candidates" ? "id,first_name,last_name,email" : table === "roles" ? "id,job_title,status" : table === "recruiter_profiles" ? "id,user_id,display_name,is_active" : "id,status";
     try {
       const records = await recruitmentData<Record<string, unknown>[]>(
         `${table}?select=${select}&agency_id=eq.${encodeURIComponent(membership.agency_id)}&order=created_at.desc&limit=200`,
@@ -108,13 +108,20 @@ export default async function RecruitmentModulePage({
             ? `${String(record.first_name ?? "")} ${String(record.last_name ?? "")}${record.email ? ` · ${String(record.email)}` : ""}`
             : table === "roles"
               ? `${String(record.job_title ?? "Role")} · ${String(record.status ?? "")}`
-              : `${String(record.status ?? "Application")} · ${String(record.id).slice(0, 8)}`;
-      return { label, value: String(record.id) };
+              : table === "recruiter_profiles"
+                ? `${String(record.display_name ?? "Recruiter")}${record.is_active ? "" : " (inactive)"}`
+                : `${String(record.status ?? "Application")} · ${String(record.id).slice(0, 8)}`;
+      return { label, value: String(table === "recruiter_profiles" ? record.user_id : record.id) };
     });
   }
   const fieldOptions = (field: ModuleField) => {
-    const table = field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : field.name === "application_id" ? "applications" : null;
+    const table = field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : field.name === "application_id" ? "applications" : field.name === "assigned_recruiter_user_id" ? "recruiter_profiles" : null;
     return table ? relationOptions[table] ?? [] : field.options;
+  };
+  const relationLabel = (field: string, value: unknown) => {
+    const table = field === "client_id" ? "clients" : field === "project_id" ? "projects" : field === "candidate_id" ? "candidates" : field === "role_id" ? "roles" : field === "application_id" ? "applications" : field === "assigned_recruiter_user_id" ? "recruiter_profiles" : null;
+    if (!table || value === null || value === undefined) return fieldValue(value);
+    return relationOptions[table]?.find((option) => option.value === String(value))?.label ?? "Related record";
   };
   const search = (typeof query.q === "string" ? query.q : "").trim().toLowerCase();
   const visibleRows = search
@@ -211,7 +218,7 @@ export default async function RecruitmentModulePage({
                     <tbody className="divide-y divide-[#edf1f5]">
                       {visibleRows.map((row) => (
                         <tr key={String(row.id)} className="align-top hover:bg-[#fbfcfe]">
-                          {module.columns.map((column) => <td key={column.key} className="max-w-64 px-5 py-4 text-xs text-[#52657d]"><span className="block truncate">{fieldValue(row[column.key]) || "—"}</span></td>)}
+                          {module.columns.map((column) => <td key={column.key} className="max-w-64 px-5 py-4 text-xs text-[#52657d]"><span className="block truncate">{["client_id", "project_id", "candidate_id", "role_id", "application_id", "assigned_recruiter_user_id"].includes(column.key) ? relationLabel(column.key, row[column.key]) : fieldValue(row[column.key]) || "—"}</span></td>)}
                           <td className="px-5 py-3">
                             <details className="min-w-40">
                               <summary className="cursor-pointer text-xs font-semibold text-[#0b7886]">Edit / delete</summary>
@@ -241,7 +248,7 @@ export default async function RecruitmentModulePage({
                 </div>
               )}
             </section>
-            <p className="mt-5 text-xs text-[#98a4b3]">Record IDs are used to link projects, vacancies, candidates and applications. Copy the relevant ID when creating a related record.</p>
+            <p className="mt-5 text-xs text-[#98a4b3]">Related records are selected by name. The system stores and links their record IDs automatically.</p>
           </div>
         </main>
       </div>
