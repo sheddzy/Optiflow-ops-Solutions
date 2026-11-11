@@ -116,6 +116,11 @@ export default async function RecruitmentModulePage({
     const table = field.name === "client_id" ? "clients" : field.name === "project_id" ? "projects" : field.name === "candidate_id" ? "candidates" : field.name === "role_id" ? "roles" : field.name === "application_id" ? "applications" : null;
     return table ? relationOptions[table] ?? [] : field.options;
   };
+  const relationLabel = (field: string, value: unknown) => {
+    const table = field === "client_id" ? "clients" : field === "project_id" ? "projects" : field === "candidate_id" ? "candidates" : field === "role_id" ? "roles" : field === "application_id" ? "applications" : null;
+    if (!table || value === null || value === undefined) return fieldValue(value);
+    return relationOptions[table]?.find((option) => option.value === String(value))?.label ?? "Related record";
+  };
   const search = (typeof query.q === "string" ? query.q : "").trim().toLowerCase();
   const visibleRows = search
     ? rows.filter((row) => Object.values(row).some((value) => fieldValue(value).toLowerCase().includes(search)))
@@ -241,7 +246,7 @@ export default async function RecruitmentModulePage({
                 </div>
               )}
             </section>
-            <p className="mt-5 text-xs text-[#98a4b3]">Record IDs are used to link projects, vacancies, candidates and applications. Copy the relevant ID when creating a related record.</p>
+            <p className="mt-5 text-xs text-[#98a4b3]">Related records are selected by name. The system stores and links their record IDs automatically.</p>
           </div>
         </main>
       </div>
