@@ -361,4 +361,158 @@ create policy "agency admins manage recruiter profiles" on public.recruiter_prof
   with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
 grant select, insert, update, delete on public.recruiter_profiles to authenticated;
 
+
+-- Recruiter workspace provisioning: a signed-in recruiter can create/update only their own profile.
+create or replace function public.ensure_my_recruiter_profile(p_display_name text)
+returns text
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $
+declare
+  v_user_id text := auth.user_id();
+  v_membership public.agency_memberships%rowtype;
+  v_slug text;
+begin
+  if v_user_id is null then
+    raise exception 'authentication_required' using errcode = '28000';
+  end if;
+  select * into v_membership
+  from public.agency_memberships
+  where user_id = v_user_id and status = 'active'
+  order by created_at asc limit 1;
+  if not found then
+    raise exception 'active_agency_membership_required' using errcode = '42501';
+  end if;
+  v_slug := trim(both '-' from regexp_replace(lower(btrim(p_display_name)), '[^a-z0-9]+', '-', 'g'));
+  if char_length(v_slug) < 2 then
+    raise exception 'valid_display_name_required' using errcode = '22023';
+  end if;
+  insert into public.recruiter_profiles (agency_id, membership_id, user_id, display_name, slug)
+  values (v_membership.agency_id, v_membership.id, v_user_id, btrim(p_display_name), v_slug)
+  on conflict (agency_id, user_id) do update
+    set display_name = excluded.display_name,
+        updated_at = now()
+  returning slug into v_slug;
+  return v_slug;
+end;
+$;
+revoke all on function public.ensure_my_recruiter_profile(text) from public;
+grant execute on function public.ensure_my_recruiter_profile(text) to authenticated;
+
+-- Recruiter data scope. Owners/admins retain agency-wide access; recruiters see and update
+-- only records assigned to their authenticated user ID (or candidate profiles they created).
+drop policy "agency members manage clients" on public.clients;
+create policy "agency admins manage clients" on public.clients
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters read clients for assigned roles" on public.clients
+  for select to authenticated
+  using (
+    exists (
+      select 1 from public.roles r
+      where r.agency_id = clients.agency_id and r.client_id = clients.id
+        and r.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  );
+
+drop policy "agency members manage projects" on public.projects;
+create policy "agency admins manage projects" on public.projects
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters read assigned projects" on public.projects
+  for select to authenticated
+  using (
+    exists (
+      select 1 from public.roles r
+      where r.agency_id = projects.agency_id and r.project_id = projects.id
+        and r.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  );
+
+drop policy "agency members manage roles" on public.roles;
+create policy "agency admins manage roles" on public.roles
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters manage assigned roles" on public.roles
+  for all to authenticated
+  using (assigned_recruiter_user_id = (select auth.user_id()))
+  with check (
+    assigned_recruiter_user_id = (select auth.user_id())
+    and public.is_agency_member(agency_id)
+  );
+
+drop policy "agency members manage candidates" on public.candidates;
+create policy "agency admins manage candidates" on public.candidates
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters manage own candidates" on public.candidates
+  for all to authenticated
+  using (
+    created_by = (select auth.user_id())
+    or exists (
+      select 1 from public.applications a
+      where a.agency_id = candidates.agency_id and a.candidate_id = candidates.id
+        and a.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  )
+  with check (
+    created_by = (select auth.user_id())
+    and public.is_agency_member(agency_id)
+  );
+
+drop policy "agency members manage applications" on public.applications;
+create policy "agency admins manage applications" on public.applications
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters manage assigned applications" on public.applications
+  for all to authenticated
+  using (assigned_recruiter_user_id = (select auth.user_id()))
+  with check (
+    assigned_recruiter_user_id = (select auth.user_id())
+    and public.is_agency_member(agency_id)
+  );
+
+drop policy "agency members manage interviews" on public.interviews;
+create policy "agency admins manage interviews" on public.interviews
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters manage assigned interviews" on public.interviews
+  for all to authenticated
+  using (
+    exists (
+      select 1 from public.applications a
+      where a.id = interviews.application_id and a.agency_id = interviews.agency_id
+        and a.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.applications a
+      where a.id = interviews.application_id and a.agency_id = interviews.agency_id
+        and a.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  );
+
+drop policy "agency members manage placements" on public.placements;
+create policy "agency admins manage placements" on public.placements
+  for all to authenticated
+  using (public.has_agency_role(agency_id, array['owner','admin']::text[]))
+  with check (public.has_agency_role(agency_id, array['owner','admin']::text[]));
+create policy "recruiters read assigned placements" on public.placements
+  for select to authenticated
+  using (
+    exists (
+      select 1 from public.applications a
+      where a.id = placements.application_id and a.agency_id = placements.agency_id
+        and a.assigned_recruiter_user_id = (select auth.user_id())
+    )
+  );
+
 commit;
