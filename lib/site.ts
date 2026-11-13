@@ -17,6 +17,7 @@ export const navFor = (hasPosts: boolean) => [
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/packages", label: "Packages" },
+  { href: "/offers", label: "Offers" },
   { href: "/opspilot", label: "OpsPilot" },
   { href: "/portfolio", label: "Portfolio" },
   ...(hasPosts ? [{ href: "/blog", label: "Blog" }] : []),
