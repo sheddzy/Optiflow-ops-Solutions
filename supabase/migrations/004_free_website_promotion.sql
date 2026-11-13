@@ -21,7 +21,7 @@ insert into public.promotions (
     'Contact or enquiry options as agreed',
     'Testing and handover'
   ]::text[],
-  'Website development is free. The business owner pays for domain registration. Hosting, premium tools, paid integrations and work outside the agreed scope are not included unless separately discussed and approved in advance. Delivery begins after the scope, responsibilities and timeline are agreed.',
+  'Free development within the agreed scope. You pay for your domain; any other costs are discussed and approved separately.',
   $faq$[
     {"q":"Is the website completely free?","a":"There is no website development fee for selected businesses within the agreed scope. You pay for your domain name. Any hosting, premium tools or additional services that may be needed will be explained and agreed with you before work begins."},
     {"q":"How do I get started?","a":"Submit your details. We will discuss your business and website requirements, agree on the scope and delivery timeline, and confirm the domain arrangements before development starts."},
