@@ -21,10 +21,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: t, description: d, alternates: { canonical: `/offers/${r.promo.slug}` }, openGraph: { title: t, description: d } };
 }
 
-const STEPS = [
-  ["Send your details", "Fill in the short form below with your business and domain details. It takes a couple of minutes."],
+const EMAIL_STEPS = [
+  ["Send your details", "Fill in the short form below with your business and domain details."],
   ["We confirm your domain", "We check that the domain is yours and active, and agree the next steps with you."],
-  ["We set it up and test it", "We configure the domain settings and your email account, then test sending and receiving before handing it over."],
+  ["We set it up and test it", "We configure your email and test sending and receiving."],
+];
+
+const WEBSITE_STEPS = [
+  ["Discuss", "We discuss your business and the website you need."],
+  ["Agree", "We agree on the website scope and delivery timeline."],
+  ["Domain", "You pay for your domain. Development begins after the agreement."],
 ];
 
 export default async function Offer({ params }: { params: Promise<{ slug: string }> }) {
@@ -32,6 +38,8 @@ export default async function Offer({ params }: { params: Promise<{ slug: string
   if (!r) notFound();
   const { promo, state, slotsLeft } = r;
   const open = state === "open";
+  const websiteOffer = promo.slug === "free-website-for-your-business";
+  const steps = websiteOffer ? WEBSITE_STEPS : EMAIL_STEPS;
 
   return (
     <>
@@ -53,7 +61,7 @@ export default async function Offer({ params }: { params: Promise<{ slug: string
             </p>
           )}
         </div>
-        <Illustration name="email" label="Illustration of a business email inbox beside an envelope with a verified badge, representing a professional email address on your own company domain" />
+        <Illustration name={websiteOffer ? "website" : "email"} label={websiteOffer ? "Illustration of a responsive business website displayed on desktop and mobile screens" : "Illustration of a business email inbox beside an envelope with a verified badge, representing a professional email address on your own company domain"} />
       </section>
 
       <section className="border-t border-line bg-white" aria-labelledby="inc-h">
@@ -68,7 +76,7 @@ export default async function Offer({ params }: { params: Promise<{ slug: string
             <aside aria-label="Who is eligible" className="self-start rounded-md bg-mist/60 p-6">
               <h3 className="text-xl font-semibold text-navy">Are you eligible?</h3>
               <p className="mt-2 text-lg text-slate">{promo.eligibility}</p>
-              <Link href="/packages/launch" className="mt-4 inline-block text-sm font-semibold text-teal-text underline">Need a domain as well? See the Launch package</Link>
+              {!websiteOffer && <Link href="/packages/launch" className="mt-4 inline-block text-sm font-semibold text-teal-text underline">Need a domain as well? See the Launch package</Link>}
             </aside>
           )}
         </div>
@@ -77,7 +85,7 @@ export default async function Offer({ params }: { params: Promise<{ slug: string
       <section className="mx-auto max-w-6xl px-5 py-14 md:py-16" aria-labelledby="how-h">
         <h2 id="how-h" className="text-3xl font-bold text-navy">How it works</h2>
         <ol className="mt-8 grid gap-8 md:grid-cols-3">
-          {STEPS.map(([t, d], i) => (<li key={t}><span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy font-semibold text-white" aria-hidden="true">{i + 1}</span><h3 className="mt-3 font-semibold">{t}</h3><p className="mt-1 text-slate">{d}</p></li>))}
+          {steps.map(([t, d], i) => (<li key={t}><span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy font-semibold text-white" aria-hidden="true">{i + 1}</span><h3 className="mt-3 font-semibold">{t}</h3><p className="mt-1 text-slate">{d}</p></li>))}
         </ol>
       </section>
 
@@ -85,7 +93,7 @@ export default async function Offer({ params }: { params: Promise<{ slug: string
         <section id="claim" className="scroll-mt-24 border-y border-line bg-white" aria-labelledby="claim-h">
           <div className="mx-auto max-w-3xl px-5 py-14 md:py-16">
             <h2 id="claim-h" className="text-3xl font-bold text-navy">{promo.ctaLabel}</h2>
-            <p className="mb-8 mt-3 text-slate">Tell us about your business and your domain. Send it by email or on WhatsApp.</p>
+            <p className="mb-8 mt-3 text-slate">{websiteOffer ? "Tell us about your business and what you need from your website. We will contact you to discuss the project." : "Tell us about your business and your domain. Send it by email or on WhatsApp."}</p>
             <PromoForm slug={promo.slug} title={promo.title} askDomain={promo.askDomain} ctaLabel={promo.ctaLabel} conditions={promo.conditions} />
           </div>
         </section>
@@ -94,7 +102,7 @@ export default async function Offer({ params }: { params: Promise<{ slug: string
       {promo.faq.length > 0 && (
         <section aria-labelledby="faq-h"><div className="mx-auto max-w-4xl px-5 py-14"><h2 id="faq-h" className="mb-6 text-3xl font-bold text-navy">Frequently asked questions</h2><FaqList items={promo.faq} /></div></section>
       )}
-      <CtaBand title={open ? "Give your business a professional email address." : "Looking for professional business email?"} text={open ? `${promo.conditions || ""}` : "See our packages, or tell us what you need."} primary={open ? promo.ctaLabel : "See our packages"} href={open ? "#claim" : "/packages"} />
+      <CtaBand title={websiteOffer ? "Get a free website for your business." : open ? "Give your business a professional email address." : "Looking for professional business email?"} text={open ? `${promo.conditions || ""}` : "See our packages, or tell us what you need."} primary={open ? promo.ctaLabel : "See our packages"} href={open ? "#claim" : "/packages"} />
       <p className="sr-only">{SITE.name}</p>
     </>
   );
