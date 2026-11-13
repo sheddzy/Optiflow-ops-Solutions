@@ -15,21 +15,21 @@ type Offer = {
 
 export default function OfferPopup({ offers }: { offers: Offer[] }) {
   const [visible, setVisible] = useState(false);
-  const offer = offers[0];
+  const [offer, setOffer] = useState<Offer | null>(null);
 
   useEffect(() => {
-    if (!offer) return;
-    try {
-      if (window.sessionStorage.getItem("optiflow-offer-popup-seen") === "1") return;
-      const timer = window.setTimeout(() => {
-        setVisible(true);
-        window.sessionStorage.setItem("optiflow-offer-popup-seen", "1");
-      }, 900);
-      return () => window.clearTimeout(timer);
-    } catch {
-      setVisible(true);
-    }
-  }, [offer]);
+    if (!offers.length) return;
+
+    // Pick one currently available offer at random for this visit.
+    const selected = offers[Math.floor(Math.random() * offers.length)];
+    setOffer(selected);
+
+    // Vary the display time so the promotion does not interrupt every visitor immediately.
+    const delay = 5000 + Math.floor(Math.random() * 13000);
+    const timer = window.setTimeout(() => setVisible(true), delay);
+
+    return () => window.clearTimeout(timer);
+  }, [offers]);
 
   useEffect(() => {
     if (!visible) return;
