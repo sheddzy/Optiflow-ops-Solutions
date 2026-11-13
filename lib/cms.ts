@@ -61,6 +61,23 @@ export function promoState(p: Promotion, claimed: number, now = Date.now()): { s
   return { state: "open", slotsLeft };
 }
 
+/** Lists all published promotions for the public offers page and site-wide promotion popup. */
+export async function getPromotions(): Promise<PromoResult[]> {
+  const db = publicClient({ revalidate: R });
+  if (!db) return [{ promo: DEFAULT_PROMO, ...promoState(DEFAULT_PROMO, 0), source: "code" }];
+  const { data, error } = await db.from("promotions").select("*").eq("published", true).order("created_at", { ascending: false });
+  if (error) { console.error("getPromotions", error.message); return []; }
+  return Promise.all((data ?? []).map(async (row) => {
+    const promo = toPromo(row);
+    let claimed = 0;
+    if (promo.slotLimit != null) {
+      const count = await db.rpc("promotion_claim_count", { pid: promo.id });
+      claimed = typeof count.data === "number" ? count.data : 0;
+    }
+    return { promo, ...promoState(promo, claimed), source: "db" as const };
+  }));
+}
+
 /** Returns null when there is no such promotion. Throws if the database is unreachable, so a cached page is kept. */
 export async function getPromotion(slug: string): Promise<PromoResult | null> {
   const db = publicClient({ revalidate: R });
