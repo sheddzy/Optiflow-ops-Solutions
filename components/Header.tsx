@@ -3,7 +3,7 @@ import Link from "next/link";
 import { navFor } from "@/lib/site";
 
 export default function Header({ hasPosts = false }: { hasPosts?: boolean }) {
-  const NAV = navFor(hasPosts).filter((item) => !["/", "/contact", "/portfolio"].includes(item.href));
+  const NAV = navFor(hasPosts).filter((item) => !["/", "/contact"].includes(item.href));
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
@@ -27,7 +27,6 @@ export default function Header({ hasPosts = false }: { hasPosts?: boolean }) {
             ))}
             <Link href="/contact" className="block rounded px-3 py-3 font-medium hover:bg-mist">Contact Us</Link>
             <Link href="/get-started" className="block rounded bg-navy px-3 py-3 font-semibold text-white hover:bg-deep">Get Started</Link>
-            <Link href="/portfolio" className="block rounded px-3 py-3 font-medium hover:bg-mist">Portfolio</Link>
             <Link href="/" className="block rounded px-3 py-3 font-medium hover:bg-mist">Home</Link>
           </nav>
         </details>
