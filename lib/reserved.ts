@@ -1,6 +1,6 @@
 /** Web addresses that CMS pages may not use because the site already uses them. */
 export const RESERVED_SLUGS = new Set([
-  "about", "services", "packages", "opspilot", "portfolio", "contact", "faq", "privacy", "terms", "thank-you",
+  "about", "services", "packages", "opspilot", "atelieros", "portfolio", "contact", "faq", "privacy", "terms", "thank-you",
   "blog", "offers", "admin", "login", "api", "payment", "p", "sitemap", "sitemap.xml", "robots.txt", "favicon.ico", "brand", "_next",
 ]);
 
