@@ -143,7 +143,13 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-6 px-5 py-14 md:grid-cols-2 md:py-16" aria-label="OptiFlow products and portfolio">
+      <section className="mx-auto grid max-w-6xl gap-6 px-5 py-14 md:grid-cols-2 lg:grid-cols-3 md:py-16" aria-label="OptiFlow products and portfolio">
+        <article className="rounded-md border border-line bg-white p-6">
+          <div className="flex aspect-[16/9] items-center justify-center rounded-md bg-[#f5f1eb]"><span className="font-serif text-4xl tracking-tight text-[#342d29]">AtelierOS</span></div>
+          <h2 className="mt-5 text-2xl font-bold text-navy">Meet AtelierOS.</h2>
+          <p className="mt-2 text-slate">A fashion-house management platform in development, designed to organise client records, measurements, orders and production workflows.</p>
+          <Link href="/atelieros" className="mt-4 inline-flex min-h-11 items-center font-semibold text-teal-text underline underline-offset-4">Explore AtelierOS →</Link>
+        </article>
         <article className="rounded-md border border-line bg-white p-6">
           <Illustration name="opspilot" label="OpsPilot operational dashboard illustration" />
           <h2 className="mt-5 text-2xl font-bold text-navy">Meet OpsPilot.</h2>
