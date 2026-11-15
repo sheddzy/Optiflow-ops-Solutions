@@ -3,6 +3,7 @@ import Link from "next/link";
 import Illustration from "@/components/Illustration";
 import { CtaBand, PageHero } from "@/components/Blocks";
 import type { IllustrationKey } from "@/lib/services-data";
+import { getProjects } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "OptiFlow Portfolio | Business Systems, Dashboards and Digital Solutions",
@@ -26,7 +27,9 @@ const PROJECTS: { name: string; category: string; art: IllustrationKey; alt: str
     overview: "A demonstration of a professional domain and business email configuration.", challenge: "The business relies on personal email addresses and lacks organised domain infrastructure.", solution: "Configure a domain and agreed business email environment.", deliverables: ["Domain configuration", "Email setup", "Email signatures", "Handover documentation"] },
 ];
 
-export default function Portfolio() {
+export default async function Portfolio() {
+  const projects = await getProjects();
+  const atelier = projects.find((project) => project.slug === "atelieros");
   return (
     <>
       <PageHero title="See How Practical Business Systems Come Together." art="portfolio" alt="Illustration of three demonstration project cards: a documentation system, a performance dashboard and a project board, each marked as a demo"
@@ -43,16 +46,22 @@ export default function Portfolio() {
       <section className="mx-auto max-w-6xl px-5 py-14 md:py-16" aria-labelledby="proj-h">
         <h2 id="proj-h" className="sr-only">OptiFlow products and demonstration projects</h2>
         <ul className="grid gap-8 md:grid-cols-2">
-          <li className="flex flex-col overflow-hidden rounded-md border border-line bg-white">
-            <div className="flex aspect-[16/9] items-center justify-center bg-[#f5f1eb]"><span className="font-serif text-5xl tracking-tight text-[#342d29]">AtelierOS</span></div>
-            <div className="flex flex-1 flex-col p-6">
-              <div className="flex flex-wrap gap-2"><span className="rounded bg-mist px-2.5 py-1 text-sm font-semibold text-navy">Proprietary software</span><span className="rounded bg-[#fdf1d6] px-2.5 py-1 text-sm font-semibold text-[#7a5200]">In development</span></div>
-              <h3 className="mt-3 text-xl font-semibold">AtelierOS — Fashion House Management</h3>
-              <p className="mt-2 text-slate">A fashion-house management platform being developed by OptiFlow to organise customer records, measurements, orders, production, inventory and business operations.</p>
-              <p className="mt-4 text-slate"><strong className="text-ink">First implementation:</strong> Casa of Oshafi.</p>
-              <Link href="/atelieros" className="btn btn-ghost mt-6 self-start">Explore AtelierOS</Link>
-            </div>
-          </li>
+          {atelier && (
+            <li className="flex flex-col overflow-hidden rounded-md border border-line bg-white">
+              {atelier.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={atelier.image_url} alt={atelier.title} loading="lazy" className="aspect-[16/9] w-full object-cover" />
+              ) : (
+                <div className="flex aspect-[16/9] items-center justify-center bg-[#f5f1eb]"><span className="font-serif text-5xl tracking-tight text-[#342d29]">AtelierOS</span></div>
+              )}
+              <div className="flex flex-1 flex-col p-6">
+                <div className="flex flex-wrap gap-2"><span className="rounded bg-mist px-2.5 py-1 text-sm font-semibold text-navy">{atelier.project_type === "Prototype" ? "Proprietary software" : atelier.project_type}</span><span className="rounded bg-[#fdf1d6] px-2.5 py-1 text-sm font-semibold text-[#7a5200]">In development</span></div>
+                <h3 className="mt-3 text-xl font-semibold">{atelier.title}</h3>
+                <p className="mt-2 text-slate">{atelier.description}</p>
+                <Link href="/atelieros" className="btn btn-ghost mt-6 self-start">Explore AtelierOS</Link>
+              </div>
+            </li>
+          )}
           {PROJECTS.map((p) => (
             <li key={p.name} className="flex flex-col overflow-hidden rounded-md border border-line bg-white">
               <Illustration name={p.art} label={p.alt} className="rounded-none" />
