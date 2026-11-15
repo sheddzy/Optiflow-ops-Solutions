@@ -147,7 +147,7 @@ export default async function Home() {
         <article className="rounded-md border border-line bg-white p-6">
           <div className="flex aspect-[16/9] items-center justify-center rounded-md bg-[#f5f1eb]"><span className="font-serif text-4xl tracking-tight text-[#342d29]">AtelierOS</span></div>
           <h2 className="mt-5 text-2xl font-bold text-navy">Meet AtelierOS.</h2>
-          <p className="mt-2 text-slate">A fashion-house management platform in development, designed to organise client records, measurements, orders and production workflows.</p>
+          <p className="mt-2 text-slate">A fully developed fashion-house management platform for client records, measurements, orders, production, inventory and business operations.</p>
           <Link href="/atelieros" className="mt-4 inline-flex min-h-11 items-center font-semibold text-teal-text underline underline-offset-4">Explore AtelierOS →</Link>
         </article>
         <article className="rounded-md border border-line bg-white p-6">
