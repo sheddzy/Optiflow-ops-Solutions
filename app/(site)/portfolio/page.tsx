@@ -39,7 +39,7 @@ export default async function Portfolio() {
         <div className="mx-auto max-w-6xl px-5 py-12">
           <h2 id="intro-h" className="text-2xl font-bold text-navy">Every business has different operational needs</h2>
           <p className="mt-3 max-w-3xl text-slate">Some need clearer processes. Others need better reporting, connected applications or a more structured way to manage projects. These projects show how practical solutions can be designed around specific business challenges.</p>
-          <p role="note" className="mt-5 max-w-3xl rounded-md border-l-4 border-teal bg-mist/60 p-4 text-sm"><strong>Please note:</strong> the examples below are demonstrations, not completed client engagements. AtelierOS is listed separately as an OptiFlow product in development; its capabilities are not represented as a finished or generally available product.</p>
+          <p role="note" className="mt-5 max-w-3xl rounded-md border-l-4 border-teal bg-mist/60 p-4 text-sm"><strong>Portfolio note:</strong> the sample workflows below are demonstrations. AtelierOS is a fully developed proprietary software product built by OptiFlow Ops Solutions Ltd.</p>
         </div>
       </section>
 
@@ -55,7 +55,7 @@ export default async function Portfolio() {
                 <div className="flex aspect-[16/9] items-center justify-center bg-[#f5f1eb]"><span className="font-serif text-5xl tracking-tight text-[#342d29]">AtelierOS</span></div>
               )}
               <div className="flex flex-1 flex-col p-6">
-                <div className="flex flex-wrap gap-2"><span className="rounded bg-mist px-2.5 py-1 text-sm font-semibold text-navy">{atelier.project_type === "Prototype" ? "Proprietary software" : atelier.project_type}</span><span className="rounded bg-[#fdf1d6] px-2.5 py-1 text-sm font-semibold text-[#7a5200]">In development</span></div>
+                <div className="flex flex-wrap gap-2"><span className="rounded bg-mist px-2.5 py-1 text-sm font-semibold text-navy">AtelierOS product</span><span className="rounded bg-[#fdf1d6] px-2.5 py-1 text-sm font-semibold text-[#7a5200]">Fully developed</span></div>
                 <h3 className="mt-3 text-xl font-semibold">{atelier.title}</h3>
                 <p className="mt-2 text-slate">{atelier.description}</p>
                 <Link href="/atelieros" className="btn btn-ghost mt-6 self-start">Explore AtelierOS</Link>
