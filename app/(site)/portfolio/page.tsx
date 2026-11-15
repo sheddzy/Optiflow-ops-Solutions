@@ -36,13 +36,23 @@ export default function Portfolio() {
         <div className="mx-auto max-w-6xl px-5 py-12">
           <h2 id="intro-h" className="text-2xl font-bold text-navy">Every business has different operational needs</h2>
           <p className="mt-3 max-w-3xl text-slate">Some need clearer processes. Others need better reporting, connected applications or a more structured way to manage projects. These projects show how practical solutions can be designed around specific business challenges.</p>
-          <p role="note" className="mt-5 max-w-3xl rounded-md border-l-4 border-teal bg-mist/60 p-4 text-sm"><strong>Please note:</strong> every project below is a demonstration project that shows OptiFlow's approach and capabilities. None is a completed client engagement, and none is evidence of measurable business results.</p>
+          <p role="note" className="mt-5 max-w-3xl rounded-md border-l-4 border-teal bg-mist/60 p-4 text-sm"><strong>Please note:</strong> the examples below are demonstrations, not completed client engagements. AtelierOS is listed separately as an OptiFlow product in development; its capabilities are not represented as a finished or generally available product.</p>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-5 py-14 md:py-16" aria-labelledby="proj-h">
-        <h2 id="proj-h" className="sr-only">Demonstration projects</h2>
+        <h2 id="proj-h" className="sr-only">OptiFlow products and demonstration projects</h2>
         <ul className="grid gap-8 md:grid-cols-2">
+          <li className="flex flex-col overflow-hidden rounded-md border border-line bg-white">
+            <div className="flex aspect-[16/9] items-center justify-center bg-[#f5f1eb]"><span className="font-serif text-5xl tracking-tight text-[#342d29]">AtelierOS</span></div>
+            <div className="flex flex-1 flex-col p-6">
+              <div className="flex flex-wrap gap-2"><span className="rounded bg-mist px-2.5 py-1 text-sm font-semibold text-navy">Proprietary software</span><span className="rounded bg-[#fdf1d6] px-2.5 py-1 text-sm font-semibold text-[#7a5200]">In development</span></div>
+              <h3 className="mt-3 text-xl font-semibold">AtelierOS — Fashion House Management</h3>
+              <p className="mt-2 text-slate">A fashion-house management platform being developed by OptiFlow to organise customer records, measurements, orders, production, inventory and business operations.</p>
+              <p className="mt-4 text-slate"><strong className="text-ink">First implementation:</strong> Casa of Oshafi.</p>
+              <Link href="/atelieros" className="btn btn-ghost mt-6 self-start">Explore AtelierOS</Link>
+            </div>
+          </li>
           {PROJECTS.map((p) => (
             <li key={p.name} className="flex flex-col overflow-hidden rounded-md border border-line bg-white">
               <Illustration name={p.art} label={p.alt} className="rounded-none" />
