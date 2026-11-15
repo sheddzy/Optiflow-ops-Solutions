@@ -45,7 +45,7 @@ export default function AtelierOS() {
           <div className="space-y-4 text-slate">
             <p>Fashion businesses manage more than designs. Each order can involve customer details, measurements, materials, production tasks, staff coordination, payments and delivery timelines.</p>
             <p>When these records live in separate notebooks, spreadsheets and chat threads, it becomes harder to maintain a clear view of what is happening.</p>
-            <p>AtelierOS is being designed to connect these operational activities in a single fashion-house workspace.</p>
+            <p>AtelierOS connects these operational activities in a single fashion-house workspace.</p>
           </div>
         </div>
       </section>
@@ -70,7 +70,7 @@ export default function AtelierOS() {
         <div className="mx-auto max-w-6xl px-5 py-14 md:py-16">
           <div className="max-w-3xl">
             <h2 id="origin-h" className="text-3xl font-bold text-navy">Developed by OptiFlow.</h2>
-            <p className="mt-4 text-lg text-slate">AtelierOS is a fully developed proprietary software product from OptiFlow Ops Solutions Ltd. Its first implementation was delivered in the context of Casa of Oshafi, grounding the product in the real workflows of a fashion business.</p>
+            <p className="mt-4 text-lg text-slate">AtelierOS is a fully developed proprietary software product from OptiFlow Ops Solutions Ltd. The product was shaped around the real operating workflows of a fashion business, with Casa of Oshafi as its first implementation context.</p>
           </div>
         </div>
       </section>
@@ -86,7 +86,7 @@ export default function AtelierOS() {
           ]} />
         </div>
       </section>
-      <CtaBand title="Bring more structure to your fashion business." text="Contact OptiFlow to discuss AtelierOS and discuss the product." primary="Express Interest" href="/contact?service=atelieros" />
+      <CtaBand title="Bring more structure to your fashion business." text="Contact OptiFlow to discuss AtelierOS, product access and onboarding." primary="Express Interest" href="/contact?service=atelieros" />
     </>
   );
 }
