@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [pk, pages, posts, promos] = await Promise.all([getPackages(), listPageSlugs().catch(() => []), getPosts(200).catch(() => []), listPromotionSlugs().catch(() => [])]);
   const paths = [
     "", "/about", "/services", ...SERVICES.map((s) => `/services/${s.slug}`), "/packages", ...pk.items.map((p) => `/packages/${p.id}`),
-    "/opspilot", "/portfolio", "/contact", "/faq", "/privacy", "/terms", ...(posts.length ? ["/blog", ...posts.map((p) => `/blog/${p.slug}`)] : []),
+    "/opspilot", "/atelieros", "/portfolio", "/contact", "/faq", "/privacy", "/terms", ...(posts.length ? ["/blog", ...posts.map((p) => `/blog/${p.slug}`)] : []),
     ...pages.map((s) => `/${s}`), ...promos.map((s) => `/offers/${s}`),
   ];
   return paths.map((p) => ({ url: `${SITE.url}${p}`, lastModified: new Date() }));
